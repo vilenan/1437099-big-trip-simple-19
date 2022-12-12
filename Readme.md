@@ -1,7 +1,7 @@
 # Проект «Большое путешествие (простой)»
 
 * Студент: [Vilena Nikitchuk](https://up.htmlacademy.ru/ecmascript/19/user/1437099).
-* Наставник: `Неизвестно`.
+* Наставник: `Anton Popov`.
 
 ---
 
