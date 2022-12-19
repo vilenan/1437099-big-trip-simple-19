@@ -5,21 +5,23 @@ import PointView from '../view/point-view.js';
 import AddNewPointView from '../view/add-new-point-view.js';
 import PointEditView from '../view/point-edit-view.js';
 
-const POINT_NUMBER = 3;
-
 export default class ListPresenter{
   listComponent = new PointsListView();
-  constructor({listContainer}) {
+  constructor({listContainer, pointsModel}) {
     this.listContainer = listContainer;
+    this.pointsModel = pointsModel;
   }
 
   init(){
+    //временное решение, уберем после прокачки модели.
+    //копируем все данные модели в презентер
+    this.listPoints = [...this.pointsModel.getPoints()];
     render(this.listComponent, this.listContainer);
     render(new SortView(), this.listComponent.getElement());
     render(new PointEditView(), this.listComponent.getElement());
-    for (let i = 0; i < POINT_NUMBER; i++) {
-      render(new PointView(), this.listComponent.getElement());
+    for (let i = 1; i < this.listPoints.length; i++) {
+      render(new PointView({point: this.listPoints[i]}), this.listComponent.getElement());
     }
-    render(new AddNewPointView(), this.listComponent.getElement());
+    render(new AddNewPointView({point: this.listPoints[0]}), this.listComponent.getElement());
   }
 }

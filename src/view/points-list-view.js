@@ -1,7 +1,6 @@
 import {createElement} from '../render.js';
 
 function createPointsListTemplate(){
-  // eslint-disable-next-line quotes
   return '<ul class="trip-events__list"></ul>';
 }
 
