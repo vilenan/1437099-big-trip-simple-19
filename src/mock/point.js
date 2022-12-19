@@ -1,29 +1,32 @@
-import {POINT_TYPE, CITIES, PHOTO, DESCRIPTION, OFFER_TITLE} from '../const.js';
-import {getRandomArrayElement, generateId, getRandomNumber} from '../utils.js';
+import {CITIES, DESCRIPTION, OFFER_TITLE, PHOTO, POINT_TYPE} from './const.js';
+import {generateId, getRandomArrayElement, getRandomNumber} from '../utils.js';
+const POINT_COUNT = 4;
 
 const getId = generateId();
+const getId2 = generateId();
+const getId3 = generateId();
 
-function getPictureSrc(){
-  return `${PHOTO}+${Math.random()}`;
+function getPictureSrc() {
+  return `${PHOTO}${Math.random()}`;
 }
 
-function getPicture(){
-  const pictures = {};
-  pictures.src = getPictureSrc();
-  pictures.description = getRandomArrayElement(DESCRIPTION);
-  return pictures;
+function getPicture() {
+  return {
+    src: getPictureSrc(),
+    description: getRandomArrayElement(DESCRIPTION)
+  };
 }
 
-function getDestinationDescription(){
+function getDestinationDescription() {
   const phrase = [];
   const phraseLength = Math.random() * 5;
-  for(let i = 0; i < phraseLength; i++){
+  for(let i = 0; i < phraseLength; i++) {
     phrase.push(getRandomArrayElement(DESCRIPTION));
   }
   return `${phrase.join('. ')}.`;
 }
 
-function getRandomMockDestination(){
+function getRandomMockDestination() {
   const id = getId();
   return {
     id,
@@ -33,8 +36,8 @@ function getRandomMockDestination(){
   };
 }
 
-function getMockOffer(){
-  const id = getId();
+function getMockOffer() {
+  const id = getId2();
   return {
     id,
     title: OFFER_TITLE[id],
@@ -83,8 +86,8 @@ const offersByType = [
   },
 ];
 
-function getRandomMockPoint(){
-  const id = getId();
+function getRandomMockPoint() {
+  const id = getId3();
   return {
     id,
     basePrice: getRandomNumber(100, 1200),
@@ -96,4 +99,8 @@ function getRandomMockPoint(){
   };
 }
 
-export {getRandomMockPoint, offersByType, getOffersArray};
+function getRandomMockPoints() {
+  return Array.from({length: POINT_COUNT}, getRandomMockPoint);
+}
+
+export {getRandomMockPoints, offersByType, getOffersArray};
