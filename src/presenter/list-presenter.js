@@ -3,25 +3,63 @@ import PointsListView from '../view/points-list-view.js';
 import SortView from '../view/sort-view.js';
 import PointView from '../view/point-view.js';
 import AddNewPointView from '../view/add-new-point-view.js';
-import PointEditView from '../view/point-edit-view.js';
+import EmptyListView from '../view/empty-list-view.js';
 
-export default class ListPresenter{
-  listComponent = new PointsListView();
+export default class ListPresenter {
+  #listComponent = new PointsListView();
+
+  #listContainer = null;
+  #pointsModel = null;
+  #listPoints = [];
+
   constructor({listContainer, pointsModel}) {
-    this.listContainer = listContainer;
-    this.pointsModel = pointsModel;
+    this.#listContainer = listContainer;
+    this.#pointsModel = pointsModel;
   }
 
-  init(){
-    //временное решение, уберем после прокачки модели.
-    //копируем все данные модели в презентер
-    this.listPoints = [...this.pointsModel.getPoints()];
-    render(this.listComponent, this.listContainer);
-    render(new SortView(), this.listComponent.getElement());
-    render(new PointEditView(), this.listComponent.getElement());
-    for (let i = 1; i < this.listPoints.length; i++) {
-      render(new PointView({point: this.listPoints[i]}), this.listComponent.getElement());
+  init() {
+    this.#listPoints = [...this.#pointsModel.points];
+
+    if (this.#listPoints.length === 0) {
+      render(new EmptyListView(), this.#listContainer);
+    } else {
+      render(this.#listComponent, this.#listContainer);
+      render(new SortView(), this.#listComponent.element);
+      this.#listPoints.forEach((point) => {
+        this.#renderPoint(point);
+      });
     }
-    render(new AddNewPointView({point: this.listPoints[0]}), this.listComponent.getElement());
+  }
+
+  #renderPoint(point) {
+    const pointComponent = new PointView({point});
+    const addNewPointComponent = new AddNewPointView({point});
+
+    const replaceCardToForm = () => {
+      this.#listComponent.element.replaceChild(addNewPointComponent.element, pointComponent.element);
+    };
+
+    const replaceFormTOCard = () => {
+      this.#listComponent.element.replaceChild(pointComponent.element, addNewPointComponent.element );
+    };
+
+    const escKeyDownHandler = (evt) => {
+      if(evt.key === 'Escape') {
+        replaceFormTOCard();
+      }
+    };
+
+    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replaceCardToForm();
+      document.addEventListener('keydown', escKeyDownHandler);
+    });
+
+    addNewPointComponent.element.querySelector('form').addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      replaceFormTOCard();
+      document.removeEventListener('keydown', escKeyDownHandler);
+    });
+
+    render(pointComponent, this.#listComponent.element);
   }
 }

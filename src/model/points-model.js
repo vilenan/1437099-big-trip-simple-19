@@ -1,9 +1,10 @@
 import {getRandomMockPoints} from '../mock/point.js';
 
 export default class PointsModel {
-  points = getRandomMockPoints();
-  getPoints(){
-    return this.points;
+  #points = getRandomMockPoints();
+
+  get points(){
+    return this.#points;
   }
 }
 
