@@ -1,4 +1,4 @@
-import {render} from '../render.js';
+import { render } from '../render.js';
 import PointsListView from '../view/points-list-view.js';
 import SortView from '../view/sort-view.js';
 import PointView from '../view/point-view.js';
@@ -44,7 +44,7 @@ export default class ListPresenter {
     };
 
     const escKeyDownHandler = (evt) => {
-      if(evt.key === 'Escape') {
+      if (evt.key === 'Escape' || evt.key === 'Esc') {
         replaceFormTOCard();
       }
     };
