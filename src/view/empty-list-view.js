@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import { createElement } from '../render.js';
 
 function getEmptyListTemplate() {
   return '<p class="trip-events__msg">Click New Event to create your first point</p>';
@@ -12,13 +12,13 @@ export default class EmptyListView {
   }
 
   get element() {
-    if(!this.#element) {
+    if (!this.#element) {
       this.#element = createElement(this.template);
     }
     return this.#element;
   }
 
-  removeElement(){
+  removeElement() {
     this.#element = null;
   }
 }

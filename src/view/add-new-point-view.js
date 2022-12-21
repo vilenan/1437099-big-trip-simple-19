@@ -1,7 +1,7 @@
-import {createElement} from '../render.js';
-import {offersByType} from '../mock/point.js';
+import { createElement } from '../render.js';
+import { offersByType } from '../mock/point.js';
 
-function getOffersTemplate(point){
+function getOffersTemplate(point) {
   const offersByPointType = offersByType.find((offer) => offer.type === point.type);
   return offersByPointType.offers.map((offer) => {
     const checked = point.offers.includes(offer.id) ? 'checked' : '';
@@ -17,11 +17,11 @@ function getOffersTemplate(point){
   }).join('');
 }
 
-function getPicturesListTemplate(pictures){
+function getPicturesListTemplate(pictures) {
   return pictures.map((picture) => `<img class="event__photo" src=${picture.src} alt="${picture.description}">`).join('');
 }
 
-function createNewPointTemplate(point){
+function createNewPointTemplate(point) {
   const {destination, basePrice} = point;
 
   return (
@@ -151,18 +151,18 @@ export default class AddNewPointView {
     this.#point = point;
   }
 
-  get template(){
+  get template() {
     return createNewPointTemplate(this.#point);
   }
 
-  get element(){
-    if(!this.#element){
+  get element() {
+    if (!this.#element) {
       this.#element = createElement(this.template);
     }
     return this.#element;
   }
 
-  removeElement(){
+  removeElement() {
     this.#element = null;
   }
 }

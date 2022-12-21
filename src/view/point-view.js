@@ -1,8 +1,8 @@
-import {createElement} from '../render.js';
-import {getOffersArray} from '../mock/point.js';
-import {formattingShortDate} from '../utils.js';
+import { createElement } from '../render.js';
+import { getOffersArray } from '../mock/point.js';
+import { formattingShortDate } from '../utils.js';
 
-function createOffersTemplate(offers){
+function createOffersTemplate(offers) {
   return offers.map((offer) => `<li class="event__offer">
           <span class="event__offer-title">${getOffersArray[offer].title}</span>
           &plus;&euro;&nbsp;
@@ -10,7 +10,7 @@ function createOffersTemplate(offers){
         </li>`).join('');
 }
 
-function createPointTemplate(point){
+function createPointTemplate(point) {
   const {type, destination, offers, basePrice, dateFrom, dateTo} = point;
   const offersTemplate = createOffersTemplate(offers);
   return (
@@ -51,18 +51,18 @@ export default class PointView {
     this.#point = point;
   }
 
-  get template(){
+  get template() {
     return createPointTemplate(this.#point);
   }
 
-  get element(){
-    if(!this.#element){
+  get element() {
+    if (!this.#element) {
       this.#element = createElement(this.template);
     }
     return this.#element;
   }
 
-  removeElement(){
+  removeElement() {
     this.#element = null;
   }
 
