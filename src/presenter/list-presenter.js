@@ -1,4 +1,4 @@
-import { render } from '../render.js';
+import { render } from '../framework/render.js';
 import PointsListView from '../view/points-list-view.js';
 import SortView from '../view/sort-view.js';
 import PointView from '../view/point-view.js';

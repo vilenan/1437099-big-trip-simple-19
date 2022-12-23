@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { offersByType } from '../mock/point.js';
 
 function getOffersTemplate(point) {
@@ -143,26 +143,15 @@ function createNewPointTemplate(point) {
   );
 }
 
-export default class AddNewPointView {
+export default class AddNewPointView extends AbstractView {
   #point = null;
-  #element = null;
 
   constructor({point}) {
+    super();
     this.#point = point;
   }
 
   get template() {
     return createNewPointTemplate(this.#point);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
