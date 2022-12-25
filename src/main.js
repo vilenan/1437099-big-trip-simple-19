@@ -1,6 +1,6 @@
+import {render} from './framework/render.js';
 import FilterView from './view/filter-view.js';
 import ListPresenter from './presenter/list-presenter.js';
-import {render} from './render.js';
 import PointsModel from './model/points-model.js';
 
 const siteHeader = document.querySelector('.page-header');

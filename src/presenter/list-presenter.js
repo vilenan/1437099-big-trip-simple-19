@@ -1,4 +1,4 @@
-import { render } from '../render.js';
+import { render } from '../framework/render.js';
 import PointsListView from '../view/points-list-view.js';
 import SortView from '../view/sort-view.js';
 import PointView from '../view/point-view.js';
@@ -32,33 +32,35 @@ export default class ListPresenter {
   }
 
   #renderPoint(point) {
-    const pointComponent = new PointView({point});
-    const addNewPointComponent = new AddNewPointView({point});
-
-    const replaceCardToForm = () => {
-      this.#listComponent.element.replaceChild(addNewPointComponent.element, pointComponent.element);
-    };
-
-    const replaceFormTOCard = () => {
-      this.#listComponent.element.replaceChild(pointComponent.element, addNewPointComponent.element );
-    };
-
     const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape' || evt.key === 'Esc') {
-        replaceFormTOCard();
+        replaceFormTOCard.call(this);
       }
     };
 
-    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceCardToForm();
-      document.addEventListener('keydown', escKeyDownHandler);
+    const pointComponent = new PointView({
+      point,
+      onClick: () => {
+        replaceCardToForm.call(this);
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
     });
 
-    addNewPointComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceFormTOCard();
-      document.removeEventListener('keydown', escKeyDownHandler);
+    const addNewPointComponent = new AddNewPointView({
+      point,
+      onSubmit: () => {
+        replaceFormTOCard.call(this);
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
     });
+
+    function replaceCardToForm() {
+      this.#listComponent.element.replaceChild(addNewPointComponent.element, pointComponent.element);
+    }
+
+    function replaceFormTOCard() {
+      this.#listComponent.element.replaceChild(pointComponent.element, addNewPointComponent.element );
+    }
 
     render(pointComponent, this.#listComponent.element);
   }

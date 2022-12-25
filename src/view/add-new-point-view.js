@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { offersByType } from '../mock/point.js';
 
 function getOffersTemplate(point) {
@@ -143,26 +143,23 @@ function createNewPointTemplate(point) {
   );
 }
 
-export default class AddNewPointView {
+export default class AddNewPointView extends AbstractView {
   #point = null;
-  #element = null;
+  #handlerSubmit = null;
 
-  constructor({point}) {
+  constructor({point, onSubmit}) {
+    super();
     this.#point = point;
+    this.#handlerSubmit = onSubmit;
+    this.element.querySelector('form').addEventListener('submit', this.#submitHandler);
   }
+
+  #submitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handlerSubmit();
+  };
 
   get template() {
     return createNewPointTemplate(this.#point);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
