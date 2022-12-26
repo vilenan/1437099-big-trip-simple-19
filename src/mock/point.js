@@ -1,5 +1,7 @@
-import {CITIES, DESCRIPTION, OFFER_TITLE, PHOTO, POINT_TYPE} from './const.js';
+import {CITIES, DESCRIPTION, OFFER_TITLE, PHOTO, POINT_TYPE, FilterType} from './const.js';
 import {generateId, getRandomArrayElement, getRandomNumber} from '../utils.js';
+import dayjs from 'dayjs';
+
 const POINT_COUNT = 4;
 
 const getId = generateId();
@@ -103,4 +105,20 @@ function getRandomMockPoints() {
   return Array.from({length: POINT_COUNT}, getRandomMockPoint);
 }
 
-export {getRandomMockPoints, offersByType, getOffersArray};
+const isFutureTask = (dateFrom) => dayjs().isBefore(dayjs(dateFrom)) || dayjs().isSame(dayjs(dateFrom), 'day');
+
+const filters = {
+  [FilterType.EVERYTHING]: (points) => points,
+  [FilterType.FUTURE]: (points) => points.filter((point) => isFutureTask(point.dateFrom)),
+};
+
+function generateFilter(points) {
+  return Object.entries(filters).map(
+    ([filterName, filteredPoints]) => ({
+      name: filterName,
+      count: filteredPoints(points).length,
+    }),
+  );
+}
+
+export {getRandomMockPoints, offersByType, getOffersArray, generateFilter};
