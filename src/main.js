@@ -13,7 +13,6 @@ const pointsModel = new PointsModel();
 const listPresenter = new ListPresenter({listContainer: eventsContainer, pointsModel});
 
 const filter = generateFilter(pointsModel.points);
-console.log(filter); // массив объектов
 
 
 render(new FilterView(filter), filters);
