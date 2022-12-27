@@ -93,8 +93,8 @@ function getRandomMockPoint() {
   return {
     id,
     basePrice: getRandomNumber(100, 1200),
-    dateFrom: new Date('2019-07-10T22:55:56.845Z'),
-    dateTo: new Date('2019-07-11T11:22:13.375Z'),
+    dateFrom: new Date(2021, getRandomNumber(1, 12), getRandomNumber(1, 30), getRandomNumber(0, 24), 24, 0),
+    dateTo: new Date(getRandomNumber(2022, 2023), getRandomNumber(1, 12), getRandomNumber(1, 30), getRandomNumber(0, 24), 24, 0),
     destination: getRandomMockDestination(),
     type: getRandomArrayElement(POINT_TYPE),
     offers: [getOffersArray[1].id, getOffersArray[2].id]
@@ -105,11 +105,11 @@ function getRandomMockPoints() {
   return Array.from({length: POINT_COUNT}, getRandomMockPoint);
 }
 
-const isFutureTask = (dateFrom) => dayjs().isBefore(dayjs(dateFrom)) || dayjs().isSame(dayjs(dateFrom), 'day');
+const isFutureTask = (dateFrom, dateTo) => dayjs().isBefore(dayjs(dateFrom)) || dayjs().isSame(dayjs(dateFrom), 'day') || (dayjs().isAfter(dayjs(dateFrom)) && dayjs().isBefore(dayjs(dateTo)));
 
 const filters = {
   [FilterType.EVERYTHING]: (points) => points,
-  [FilterType.FUTURE]: (points) => points.filter((point) => isFutureTask(point.dateFrom)),
+  [FilterType.FUTURE]: (points) => points.filter((point) => isFutureTask(point.dateFrom, point.dateTo)),
 };
 
 function generateFilter(points) {
