@@ -6,10 +6,11 @@ function getOffersTemplate(point) {
   const offersByPointType = offersByType.find((offer) => offer.type === point.type);
   return offersByPointType.offers.map((offer) => {
     const checked = point.offers.includes(offer.id) ? 'checked' : '';
+    const offerTitleFusion = offer.title.split(' ').join('');
     return (
       `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${checked}>
-          <label class="event__offer-label" for="event-offer-luggage-1">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerTitleFusion}-${offer.id}" type="checkbox" name="event-offer-${offerTitleFusion}" ${checked}>
+          <label class="event__offer-label" for="event-offer-${offerTitleFusion}-${offer.id}">
             <span class="event__offer-title">${offer.title}</span>
             &plus;&euro;&nbsp;
             <span class="event__offer-price">${offer.price}</span>
