@@ -35,6 +35,7 @@ export default class ListPresenter {
     const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape' || evt.key === 'Esc') {
         replaceFormTOCard.call(this);
+        document.removeEventListener('keydown', escKeyDownHandler);
       }
     };
 
