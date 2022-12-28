@@ -9,9 +9,4 @@ const DESCRIPTION = description.split('.');
 
 const PHOTO = 'https://loremflickr.com/248/152?random=';
 
-const FilterType = {
-  EVERYTHING: 'everything',
-  FUTURE: 'future',
-};
-
-export {FilterType, POINT_TYPE, DESCRIPTION, PHOTO, CITIES, OFFER_TITLE};
+export {POINT_TYPE, DESCRIPTION, PHOTO, CITIES, OFFER_TITLE};

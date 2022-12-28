@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import {FilterType} from './const.js';
+
 const DATE_FORMAT = 'DD/MM/YY HH:mm';
 const SHORT_DATE_FORMAT = 'HH:mm';
 
@@ -26,4 +28,20 @@ function generateId() {
   return addId;
 }
 
-export { getRandomArrayElement, generateId, formattingShortDate, getRandomNumber, formattingFullDate };
+const isFutureTask = (dateFrom, dateTo) => dayjs().isBefore(dayjs(dateFrom)) || dayjs().isSame(dayjs(dateFrom), 'day') || (dayjs().isAfter(dayjs(dateFrom)) && dayjs().isBefore(dayjs(dateTo)));
+
+const filters = {
+  [FilterType.EVERYTHING]: (points) => points,
+  [FilterType.FUTURE]: (points) => points.filter((point) => isFutureTask(point.dateFrom, point.dateTo)),
+};
+
+function generateFilter(points) {
+  return Object.entries(filters).map(
+    ([filterName, filteredPoints]) => ({
+      name: filterName,
+      count: filteredPoints(points).length,
+    }),
+  );
+}
+
+export { getRandomArrayElement, generateId, formattingShortDate, getRandomNumber, formattingFullDate, generateFilter };
