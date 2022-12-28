@@ -1,5 +1,6 @@
 import {CITIES, DESCRIPTION, OFFER_TITLE, PHOTO, POINT_TYPE} from './const.js';
 import {generateId, getRandomArrayElement, getRandomNumber} from '../utils.js';
+
 const POINT_COUNT = 4;
 
 const getId = generateId();
@@ -91,8 +92,8 @@ function getRandomMockPoint() {
   return {
     id,
     basePrice: getRandomNumber(100, 1200),
-    dateFrom: new Date('2019-07-10T22:55:56.845Z'),
-    dateTo: new Date('2019-07-11T11:22:13.375Z'),
+    dateFrom: new Date(2021, getRandomNumber(1, 12), getRandomNumber(1, 30), getRandomNumber(0, 24), 24, 0),
+    dateTo: new Date(getRandomNumber(2022, 2023), getRandomNumber(1, 12), getRandomNumber(1, 30), getRandomNumber(0, 24), 24, 0),
     destination: getRandomMockDestination(),
     type: getRandomArrayElement(POINT_TYPE),
     offers: [getOffersArray[1].id, getOffersArray[2].id]

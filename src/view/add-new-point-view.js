@@ -1,14 +1,16 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { offersByType } from '../mock/point.js';
+import {formattingFullDate} from '../utils.js';
 
 function getOffersTemplate(point) {
   const offersByPointType = offersByType.find((offer) => offer.type === point.type);
   return offersByPointType.offers.map((offer) => {
     const checked = point.offers.includes(offer.id) ? 'checked' : '';
+    const offerTitleFusion = offer.title.split(' ').join('');
     return (
       `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${checked}>
-          <label class="event__offer-label" for="event-offer-luggage-1">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerTitleFusion}-${offer.id}" type="checkbox" name="event-offer-${offerTitleFusion}" ${checked}>
+          <label class="event__offer-label" for="event-offer-${offerTitleFusion}-${offer.id}">
             <span class="event__offer-title">${offer.title}</span>
             &plus;&euro;&nbsp;
             <span class="event__offer-price">${offer.price}</span>
@@ -22,7 +24,7 @@ function getPicturesListTemplate(pictures) {
 }
 
 function createNewPointTemplate(point) {
-  const {destination, basePrice} = point;
+  const {destination, basePrice, dateFrom, dateTo} = point;
 
   return (
     `<li class="trip-events__item">
@@ -101,10 +103,10 @@ function createNewPointTemplate(point) {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="19/03/19 00:00">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formattingFullDate(dateFrom)}">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="19/03/19 00:00">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formattingFullDate(dateTo)}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
