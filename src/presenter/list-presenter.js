@@ -2,8 +2,9 @@ import { render } from '../framework/render.js';
 import PointsListView from '../view/points-list-view.js';
 import SortView from '../view/sort-view.js';
 import PointView from '../view/point-view.js';
-import AddNewPointView from '../view/add-new-point-view.js';
+import EditPointView from '../view/edit-point-view.js';
 import EmptyListView from '../view/empty-list-view.js';
+
 
 export default class ListPresenter {
   #listComponent = new PointsListView();
@@ -47,7 +48,7 @@ export default class ListPresenter {
       }
     });
 
-    const addNewPointComponent = new AddNewPointView({
+    const editPointComponent = new EditPointView({
       point,
       onSubmit: () => {
         replaceFormTOCard.call(this);
@@ -56,11 +57,11 @@ export default class ListPresenter {
     });
 
     function replaceCardToForm() {
-      this.#listComponent.element.replaceChild(addNewPointComponent.element, pointComponent.element);
+      this.#listComponent.element.replaceChild(editPointComponent.element, pointComponent.element);
     }
 
     function replaceFormTOCard() {
-      this.#listComponent.element.replaceChild(pointComponent.element, addNewPointComponent.element );
+      this.#listComponent.element.replaceChild(pointComponent.element, editPointComponent.element );
     }
 
     render(pointComponent, this.#listComponent.element);
