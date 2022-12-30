@@ -7,10 +7,10 @@ import {generateFilter} from './utils.js';
 const siteHeaderEl = document.querySelector('.page-header');
 const filtersEl = siteHeaderEl.querySelector('.trip-controls__filters');
 const siteMainEl = document.querySelector('.page-main');
-const eventsContainerEl = siteMainEl.querySelector('.trip-events');
+const pointsContainerEl = siteMainEl.querySelector('.trip-events');
 
 const pointsModel = new PointsModel();
-const listPresenter = new ListPresenter({listContainer: eventsContainerEl, pointsModel});
+const listPresenter = new ListPresenter({pointsContainer: pointsContainerEl, pointsModel});
 
 const filter = generateFilter(pointsModel.points);
 
