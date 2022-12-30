@@ -12,6 +12,7 @@ export default class ListPresenter {
   #pointsContainer = null;
   #pointsModel = null;
   #listPoints = [];
+  #pointPresenters = new Map();
 
   constructor({pointsContainer, pointsModel}) {
     this.#pointsContainer = pointsContainer;
@@ -47,5 +48,11 @@ export default class ListPresenter {
   #renderPoint(point) {
     const pointPresenter = new PointPresenter({listComponent: this.#listComponent.element});
     pointPresenter.init(point);
+    this.#pointPresenters.set(point.id, pointPresenter);
+  }
+
+  #clearPointList() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
   }
 }

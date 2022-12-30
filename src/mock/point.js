@@ -1,5 +1,6 @@
 import {CITIES, DESCRIPTION, OFFER_TITLE, PHOTO, POINT_TYPE} from './const.js';
 import {generateId, getRandomArrayElement, getRandomNumber} from '../utils.js';
+import {nanoid} from 'nanoid';
 
 const POINT_COUNT = 4;
 
@@ -88,9 +89,8 @@ const offersByType = [
 ];
 
 function getRandomMockPoint() {
-  const id = getId3();
   return {
-    id,
+    id: nanoid(),
     basePrice: getRandomNumber(100, 1200),
     dateFrom: new Date(2021, getRandomNumber(1, 12), getRandomNumber(1, 30), getRandomNumber(0, 24), 24, 0),
     dateTo: new Date(getRandomNumber(2022, 2023), getRandomNumber(1, 12), getRandomNumber(1, 30), getRandomNumber(0, 24), 24, 0),

@@ -1,6 +1,6 @@
 import PointView from '../view/point-view.js';
 import EditPointView from '../view/edit-point-view.js';
-import {render, replace} from '../framework/render.js';
+import {remove, render, replace} from '../framework/render.js';
 
 export default class PointPresenter {
   #listComponent = null;
@@ -54,5 +54,9 @@ export default class PointPresenter {
     }
   };
 
+  destroy() {
+    remove(this.#pointComponent);
+    remove(this.#editPointComponent);
+  }
 }
 
