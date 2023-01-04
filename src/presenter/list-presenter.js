@@ -46,7 +46,7 @@ export default class ListPresenter {
   }
 
   #renderPoint(point) {
-    const pointPresenter = new PointPresenter({listComponent: this.#listComponent.element});
+    const pointPresenter = new PointPresenter({listComponent: this.#listComponent.element, onModeChange: this.#handleModeChange});
     pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
   }
@@ -55,4 +55,8 @@ export default class ListPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
   }
+
+  #handleModeChange = ()=> {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
 }
