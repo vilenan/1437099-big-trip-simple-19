@@ -6,7 +6,6 @@ const POINT_COUNT = 4;
 
 const getId = generateId();
 const getId2 = generateId();
-const getId3 = generateId();
 
 function getPictureSrc() {
   return `${PHOTO}${Math.random()}`;
