@@ -1,4 +1,4 @@
-import { render } from '../framework/render.js';
+import {remove, render} from '../framework/render.js';
 import PointsListView from '../view/points-list-view.js';
 import SortView from '../view/sort-view.js';
 import EmptyListView from '../view/empty-list-view.js';
@@ -31,10 +31,10 @@ export default class ListPresenter {
       this.#renderEmptyList();
     } else {
       this.#renderPointsList();
+      this.#currentSortType = SortType.DATE_UP;
       this.#renderSort();
       this.#listPoints.sort(sortPointsDateUp);
       this.#renderPoints();
-      this.#currentSortType = SortType.DATE_UP;
     }
   }
 
@@ -43,7 +43,10 @@ export default class ListPresenter {
   }
 
   #renderSort() {
-    this.#sortComponent = new SortView({onSortData: this.#handleSortByData, onSortPrice: this.#handleSortByPrice});
+    this.#sortComponent = new SortView({
+      onSortData: this.#handleSortByData,
+      onSortPrice: this.#handleSortByPrice,
+      currentSort: this.#currentSortType});
     render(this.#sortComponent, this.#listComponent.element);
   }
 
@@ -77,9 +80,11 @@ export default class ListPresenter {
       return;
     }
     this.#clearPointList();
+    remove(this.#sortComponent);
     this.#listPoints.sort(sortPointsPriceDown);
-    this.#renderPoints();
     this.#currentSortType = SortType.PRICE_DOWN;
+    this.#renderSort();
+    this.#renderPoints();
   };
 
   #handleSortByData = () => {
@@ -87,8 +92,10 @@ export default class ListPresenter {
       return;
     }
     this.#clearPointList();
+    remove(this.#sortComponent);
     this.#listPoints.sort(sortPointsDateUp);
-    this.#renderPoints();
     this.#currentSortType = SortType.DATE_UP;
+    this.#renderSort();
+    this.#renderPoints();
   };
 }
