@@ -3,16 +3,20 @@ import PointsListView from '../view/points-list-view.js';
 import SortView from '../view/sort-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import PointPresenter from './point-presenter.js';
+import {SortType} from '../const.js';
+import {sortPointsDateUp, sortPointsPriceDown} from '../utils.js';
 
 
 export default class ListPresenter {
   #listComponent = new PointsListView();
-  #sortComponent = new SortView();
+  #sortComponent = null;
   #emptyListComponent = new EmptyListView();
   #pointsContainer = null;
   #pointsModel = null;
   #listPoints = [];
   #pointPresenters = new Map();
+  #currentSortType = null;
+  #sortedDefault = [];
 
   constructor({pointsContainer, pointsModel}) {
     this.#pointsContainer = pointsContainer;
@@ -21,15 +25,16 @@ export default class ListPresenter {
 
   init() {
     this.#listPoints = [...this.#pointsModel.points];
+    this.#sortedDefault = [...this.#pointsModel.points];
 
     if (this.#listPoints.length === 0) {
       this.#renderEmptyList();
     } else {
       this.#renderPointsList();
       this.#renderSort();
-      this.#listPoints.forEach((point) => {
-        this.#renderPoint(point);
-      });
+      this.#listPoints.sort(sortPointsDateUp);
+      this.#renderPoints();
+      this.#currentSortType = SortType.DATE_UP;
     }
   }
 
@@ -38,6 +43,7 @@ export default class ListPresenter {
   }
 
   #renderSort() {
+    this.#sortComponent = new SortView({onSortData: this.#handleSortByData, onSortPrice: this.#handleSortByPrice});
     render(this.#sortComponent, this.#listComponent.element);
   }
 
@@ -51,12 +57,38 @@ export default class ListPresenter {
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
+  #renderPoints() {
+    this.#listPoints.forEach((point) => {
+      this.#renderPoint(point);
+    });
+  }
+
   #clearPointList() {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
   }
 
-  #handleModeChange = ()=> {
+  #handleModeChange = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  #handleSortByPrice = () => {
+    if(this.#currentSortType === SortType.PRICE_DOWN) {
+      return;
+    }
+    this.#clearPointList();
+    this.#listPoints.sort(sortPointsPriceDown);
+    this.#renderPoints();
+    this.#currentSortType = SortType.PRICE_DOWN;
+  };
+
+  #handleSortByData = () => {
+    if(this.#currentSortType === SortType.DATE_UP) {
+      return;
+    }
+    this.#clearPointList();
+    this.#listPoints.sort(sortPointsDateUp);
+    this.#renderPoints();
+    this.#currentSortType = SortType.DATE_UP;
   };
 }
