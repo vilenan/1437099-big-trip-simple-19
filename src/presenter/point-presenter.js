@@ -30,7 +30,8 @@ export default class PointPresenter {
 
     this.#editPointComponent = new EditPointView({
       point: this.#point,
-      onSubmit: this.#handleSubmit
+      onSubmit: this.#handleSubmit,
+      onCloseClick: this.#handleCloseClick
     });
 
     render(this.#pointComponent, this.#listComponent);
@@ -57,6 +58,10 @@ export default class PointPresenter {
 
   #handleClick = () => {
     this.#replaceCardToForm();
+  };
+
+  #handleCloseClick = () => {
+    this.#replaceFormToCard();
   };
 
   #handleSubmit = () => {
