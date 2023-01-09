@@ -44,9 +44,9 @@ export default class ListPresenter {
 
   #renderSort() {
     this.#sortComponent = new SortView({
-      onSortData: this.#handleSortByData,
-      onSortPrice: this.#handleSortByPrice,
-      currentSort: this.#currentSortType});
+      onSortChange: this.#handleSortChange,
+      currentSort: this.#currentSortType,
+    });
     render(this.#sortComponent, this.#listComponent.element);
   }
 
@@ -75,26 +75,21 @@ export default class ListPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #handleSortByPrice = () => {
-    if(this.#currentSortType === SortType.PRICE_DOWN) {
+  #handleSortChange = (sortType) => {
+    if(this.#currentSortType === sortType) {
       return;
     }
     this.#clearPointList();
     remove(this.#sortComponent);
-    this.#listPoints.sort(sortPointsPriceDown);
-    this.#currentSortType = SortType.PRICE_DOWN;
-    this.#renderSort();
-    this.#renderPoints();
-  };
-
-  #handleSortByData = () => {
-    if(this.#currentSortType === SortType.DATE_UP) {
-      return;
+    switch(sortType){
+      case SortType.PRICE_DOWN:
+        this.#listPoints.sort(sortPointsPriceDown);
+        break;
+      case SortType.DATE_UP:
+        this.#listPoints.sort(sortPointsDateUp);
+        break;
     }
-    this.#clearPointList();
-    remove(this.#sortComponent);
-    this.#listPoints.sort(sortPointsDateUp);
-    this.#currentSortType = SortType.DATE_UP;
+    this.#currentSortType = sortType;
     this.#renderSort();
     this.#renderPoints();
   };
