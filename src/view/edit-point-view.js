@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {offersByType} from '../mock/point.js';
+import {CITIES} from '../mock/const.js';
 import {formattingFullDate} from '../utils.js';
 
 function createOffersTemplate(point) {
@@ -22,6 +23,10 @@ function createOffersTemplate(point) {
     </div>`
     );
   }).join('');
+}
+
+function createDestinationListTemplate() {
+  return CITIES.map((city) => `<option value="${city}"></option>`).join('');
 }
 
 function createNewEditPointTemplate(point) {
@@ -95,9 +100,7 @@ function createNewEditPointTemplate(point) {
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Chamonix" list="destination-list-1">
             <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
+              ${createDestinationListTemplate()}
             </datalist>
           </div>
 
@@ -112,9 +115,9 @@ function createNewEditPointTemplate(point) {
           <div class="event__field-group  event__field-group--price">
             <label class="event__label" for="event-price-1">
               <span class="visually-hidden">Price</span>
-              ${basePrice}&euro;
+             &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
