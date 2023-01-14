@@ -1,5 +1,5 @@
-import AbstractView from '../framework/view/abstract-view.js';
-import {offersByType} from '../mock/point.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import {offersByType, POINT_TYPE} from '../mock/point.js';
 import {CITIES} from '../mock/const.js';
 import {formattingFullDate} from '../utils.js';
 
@@ -25,8 +25,39 @@ function createOffersTemplate(point) {
   }).join('');
 }
 
+function createTypesTemplate(point) {
+  return POINT_TYPE.map((type) => (
+    `<div class="event__type-item">
+      <input id="event-type-${type}-${point.id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
+      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${point.id}">${type}</label>
+    </div>`
+  )).join('');
+}
+
 function createDestinationListTemplate() {
   return CITIES.map((city) => `<option value="${city}"></option>`).join('');
+}
+
+function createPicturesTemplate(pictures) {
+  return pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`)
+    .join('');
+}
+
+function createDestinationTemplate(destination){
+  const {description, name, pictures} = destination;
+  return destination !== null ?
+    (
+      `<section class="event__section  event__section--destination">
+        <h3 class="event__section-title  event__section-title--destination">${name}</h3>
+        <p class="event__destination-description">${description}</p>
+
+        <div class="event__photos-container">
+          <div class="event__photos-tape">
+            ${createPicturesTemplate(pictures)};
+          </div>
+        </div>
+      </section>`
+    ) : '' ;
 }
 
 function createNewEditPointTemplate(point) {
@@ -45,51 +76,7 @@ function createNewEditPointTemplate(point) {
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-
-                <div class="event__type-item">
-                  <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                  <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                  <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                  <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                  <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                  <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                  <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                  <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                  <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                  <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-                </div>
+                 ${createTypesTemplate(point)}
               </fieldset>
             </div>
           </div>
@@ -135,17 +122,14 @@ function createNewEditPointTemplate(point) {
             </div>
           </section>
 
-          <section class="event__section  event__section--destination">
-            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${destination.description}</p>
-          </section>
+          ${createDestinationTemplate(destination)}
         </section>
       </form>
      </li>`
   );
 }
 
-export default class EditPointView extends AbstractView {
+export default class EditPointView extends AbstractStatefulView {
   #point = null;
   #handlerSubmit = null;
   #handlerCloseClick = null;

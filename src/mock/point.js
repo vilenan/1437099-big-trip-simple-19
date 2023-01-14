@@ -103,4 +103,4 @@ function getRandomMockPoints() {
   return Array.from({length: POINT_COUNT}, getRandomMockPoint);
 }
 
-export {getRandomMockPoints, offersByType, getOffersArray};
+export {getRandomMockPoints, offersByType, getOffersArray, POINT_TYPE};
