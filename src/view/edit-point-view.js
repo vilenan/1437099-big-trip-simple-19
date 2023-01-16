@@ -149,7 +149,8 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click',this.#clickCloseHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#clickChangeTypeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#clickChangeDestinationHandler);
-
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#clickChangePriceHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('input', this.#clickOffersHandler);
   }
 
   #submitHandler = (evt) => {
@@ -172,6 +173,13 @@ export default class EditPointView extends AbstractStatefulView {
     // console.log(this._state);
   };
 
+  #clickChangePriceHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      basePrice: evt.target.value,
+    });
+  };
+
   #clickChangeDestinationHandler = (evt) => {
     evt.preventDefault();
     const tripDestination = evt.target.value;
@@ -180,6 +188,23 @@ export default class EditPointView extends AbstractStatefulView {
       destination: {
         name: tripDestination,
       },
+    });
+  };
+
+  #clickOffersHandler = (evt) => {
+    evt.preventDefault();
+    const offer = evt.target.closest('.event__offer-checkbox');
+    const offers = this.element.querySelectorAll('.event__offer-checkbox');
+    // console.log(offer);
+    if(!offer){
+      return;
+    }
+    offer.toggleAttribute('checked');
+    const checkedOffers = [...offers].filter((item) => item.hasAttribute('checked'));
+    const checkedOffersId = checkedOffers.map((item) => item.id);
+    // console.log(checkedOffersId);
+    this._setState({
+      offers: checkedOffersId,
     });
   };
 
