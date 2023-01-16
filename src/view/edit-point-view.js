@@ -26,12 +26,13 @@ function createOffersTemplate(point) {
 }
 
 function createTypesTemplate(point) {
-  return POINT_TYPE.map((type) => (
-    `<div class="event__type-item">
-      <input id="event-type-${type}-${point.id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
+  return POINT_TYPE.map((type) => {
+    const checked = (type === point.type) ? 'checked' : '';
+    return `<div class="event__type-item">
+      <input id="event-type-${type}-${point.id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${checked}>
       <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${point.id}">${type}</label>
-    </div>`
-  )).join('');
+    </div>`;
+  }).join('');
 }
 
 function createDestinationListTemplate() {
@@ -61,17 +62,17 @@ function createDestinationTemplate(destination){
 }
 
 function createNewEditPointTemplate(point) {
-  const {destination, basePrice, dateFrom, dateTo} = point;
+  const {destination, basePrice, dateFrom, dateTo, type} = point;
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
         <header class="event__header">
           <div class="event__type-wrapper">
-            <label class="event__type  event__type-btn" for="event-type-toggle-1">
+            <label class="event__type  event__type-btn" for="event-type-toggle-${point.id}">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="img/icons/flight.png" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
             </label>
-            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+            <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${point.id}" type="checkbox">
 
             <div class="event__type-list">
               <fieldset class="event__type-group">
@@ -82,29 +83,29 @@ function createNewEditPointTemplate(point) {
           </div>
 
           <div class="event__field-group  event__field-group--destination">
-            <label class="event__label  event__type-output" for="event-destination-1">
-              Flight
+            <label class="event__label  event__type-output" for="event-destination-${point.id}">
+              ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Chamonix" list="destination-list-1">
-            <datalist id="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-${point.id}" type="text" name="event-destination" value="Chamonix" list="destination-list-${point.id}">
+            <datalist id="destination-list-${point.id}">
               ${createDestinationListTemplate()}
             </datalist>
           </div>
 
           <div class="event__field-group  event__field-group--time">
-            <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formattingFullDate(dateFrom)}">
+            <label class="visually-hidden" for="event-start-time-${point.id}">From</label>
+            <input class="event__input  event__input--time" id="event-start-time-${point.id}" type="text" name="event-start-time" value="${formattingFullDate(dateFrom)}">
             &mdash;
-            <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formattingFullDate(dateTo)}">
+            <label class="visually-hidden" for="event-end-time-${point.id}">To</label>
+            <input class="event__input  event__input--time" id="event-end-time-${point.id}" type="text" name="event-end-time" value="${formattingFullDate(dateTo)}">
           </div>
 
           <div class="event__field-group  event__field-group--price">
-            <label class="event__label" for="event-price-1">
+            <label class="event__label" for="event-price-${point.id}">
               <span class="visually-hidden">Price</span>
              &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-${point.id}" type="text" name="event-price" value="${basePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -139,8 +140,16 @@ export default class EditPointView extends AbstractStatefulView {
     this.#point = point;
     this.#handlerSubmit = onSubmit;
     this.#handlerCloseClick = onCloseClick;
+    this._setState(EditPointView.parsePointToState(point));
+    this._restoreHandlers();
+  }
+
+  _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#submitHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click',this.#clickCloseHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#clickChangeTypeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#clickChangeDestinationHandler);
+
   }
 
   #submitHandler = (evt) => {
@@ -153,8 +162,33 @@ export default class EditPointView extends AbstractStatefulView {
     this.#handlerCloseClick();
   };
 
+  #clickChangeTypeHandler = (evt) => {
+    evt.preventDefault();
+    const tripType = evt.target.value;
+    // console.log(evt.target, this._state);
+    this.updateElement({
+      type: tripType,
+    });
+    // console.log(this._state);
+  };
+
+  #clickChangeDestinationHandler = (evt) => {
+    evt.preventDefault();
+    const tripDestination = evt.target.value;
+    // console.log(tripDestination);
+    this.updateElement({
+      destination: {
+        name: tripDestination,
+      },
+    });
+  };
+
+  static parsePointToState(point) {
+    return {...point};
+  }
+
   get template() {
-    return createNewEditPointTemplate(this.#point);
+    return createNewEditPointTemplate(this._state);
   }
 }
 
