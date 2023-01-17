@@ -4,7 +4,6 @@ import {nanoid} from 'nanoid';
 
 const POINT_COUNT = 4;
 
-const getId = generateId();
 const getId2 = generateId();
 
 function getPictureSrc() {
@@ -27,15 +26,12 @@ function getDestinationDescription() {
   return `${phrase.join('. ')}.`;
 }
 
-function getRandomMockDestination() {
-  const id = getId();
-  return {
-    id,
-    description: getDestinationDescription(),
-    name: getRandomArrayElement(CITIES),
-    pictures: Array.from({length: 4}, getPicture),
-  };
-}
+const destinationsArray = CITIES.map((city, index) => ({
+  id : index,
+  description: getDestinationDescription(),
+  name: city,
+  pictures: Array.from({length: 4}, getPicture),
+}));
 
 function getMockOffer() {
   const id = getId2();
@@ -93,7 +89,7 @@ function getRandomMockPoint() {
     basePrice: getRandomNumber(100, 1200),
     dateFrom: new Date(2021, getRandomNumber(1, 12), getRandomNumber(1, 30), getRandomNumber(0, 24), 24, 0),
     dateTo: new Date(getRandomNumber(2022, 2023), getRandomNumber(1, 12), getRandomNumber(1, 30), getRandomNumber(0, 24), 24, 0),
-    destination: getRandomMockDestination(),
+    destination: getRandomArrayElement(destinationsArray),
     type: getRandomArrayElement(POINT_TYPE),
     offers: [getOffersArray[1].id, getOffersArray[2].id]
   };
@@ -103,4 +99,4 @@ function getRandomMockPoints() {
   return Array.from({length: POINT_COUNT}, getRandomMockPoint);
 }
 
-export {getRandomMockPoints, offersByType, getOffersArray, POINT_TYPE};
+export {getRandomMockPoints, offersByType, getOffersArray, POINT_TYPE, destinationsArray};

@@ -86,7 +86,7 @@ function createNewEditPointTemplate(point) {
             <label class="event__label  event__type-output" for="event-destination-${point.id}">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${point.id}" type="text" name="event-destination" value="Chamonix" list="destination-list-${point.id}">
+            <input class="event__input  event__input--destination" id="event-destination-${point.id}" type="text" name="event-destination" value="${destination.name}" list="destination-list-${point.id}">
             <datalist id="destination-list-${point.id}">
               ${createDestinationListTemplate()}
             </datalist>
@@ -166,11 +166,9 @@ export default class EditPointView extends AbstractStatefulView {
   #clickChangeTypeHandler = (evt) => {
     evt.preventDefault();
     const tripType = evt.target.value;
-    // console.log(evt.target, this._state);
     this.updateElement({
       type: tripType,
     });
-    // console.log(this._state);
   };
 
   #clickChangePriceHandler = (evt) => {
@@ -182,12 +180,9 @@ export default class EditPointView extends AbstractStatefulView {
 
   #clickChangeDestinationHandler = (evt) => {
     evt.preventDefault();
-    const tripDestination = evt.target.value;
-    // console.log(tripDestination);
+    const tripDestination = this._state.destinations.find((item) => item.name === evt.target.value);
     this.updateElement({
-      destination: {
-        name: tripDestination,
-      },
+      destination: tripDestination,
     });
   };
 
@@ -195,14 +190,12 @@ export default class EditPointView extends AbstractStatefulView {
     evt.preventDefault();
     const offer = evt.target.closest('.event__offer-checkbox');
     const offers = this.element.querySelectorAll('.event__offer-checkbox');
-    // console.log(offer);
     if(!offer){
       return;
     }
     offer.toggleAttribute('checked');
     const checkedOffers = [...offers].filter((item) => item.hasAttribute('checked'));
     const checkedOffersId = checkedOffers.map((item) => item.id);
-    // console.log(checkedOffersId);
     this._setState({
       offers: checkedOffersId,
     });
@@ -210,6 +203,10 @@ export default class EditPointView extends AbstractStatefulView {
 
   static parsePointToState(point) {
     return {...point};
+  }
+
+  reset(point) {
+    this.updateElement(EditPointView.parsePointToState(point));
   }
 
   get template() {
