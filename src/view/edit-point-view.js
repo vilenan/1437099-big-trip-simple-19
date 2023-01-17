@@ -44,7 +44,7 @@ function createPicturesTemplate(pictures) {
     .join('');
 }
 
-function createDestinationTemplate(destination){
+function createDestinationTemplate(destination) {
   const {description, name, pictures} = destination;
   return destination !== null ?
     (
@@ -155,7 +155,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #submitHandler = (evt) => {
     evt.preventDefault();
-    this.#handlerSubmit();
+    this.#handlerSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
   #clickCloseHandler = (evt) => {
@@ -203,6 +203,9 @@ export default class EditPointView extends AbstractStatefulView {
 
   static parsePointToState(point) {
     return {...point};
+  }
+  static parseStateToPoint(state) {
+    return {...state};
   }
 
   reset(point) {

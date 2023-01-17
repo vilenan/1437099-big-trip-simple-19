@@ -58,5 +58,9 @@ function sortPointsDateUp(pointA, pointB) {
   return dayjs(pointA.dateFrom).diff(pointB.dateFrom);
 }
 
-export { getRandomArrayElement, generateId, formattingShortDate, getRandomNumber, formattingFullDate, formattingDayDate, generateFilter, sortPointsPriceDown, sortPointsDateUp };
+function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+
+export { updateItem, getRandomArrayElement, generateId, formattingShortDate, getRandomNumber, formattingFullDate, formattingDayDate, generateFilter, sortPointsPriceDown, sortPointsDateUp };
 

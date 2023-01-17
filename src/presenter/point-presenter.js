@@ -12,16 +12,21 @@ export default class PointPresenter {
   #editPointComponent = null;
   #pointComponent = null;
   #handleModeChange = null;
+  #handleDataChange = null;
   #point = null;
   #mode = Mode.DEFAULT;
 
-  constructor({listComponent, onModeChange}) {
+  constructor({listComponent, onModeChange, onDataChange}) {
     this.#listComponent = listComponent;
     this.#handleModeChange = onModeChange;
+    this.#handleDataChange = onDataChange;
   }
 
   init(point){
     this.#point = point;
+
+    const prevPointComponent = this.#pointComponent;
+    const prevPointEditComponent = this.#editPointComponent;
 
     this.#pointComponent = new PointView({
       point: this.#point,
@@ -34,7 +39,21 @@ export default class PointPresenter {
       onCloseClick: this.#handleCloseClick
     });
 
-    render(this.#pointComponent, this.#listComponent);
+    if (prevPointComponent === null || prevPointEditComponent === null) {
+      render(this.#pointComponent, this.#listComponent);
+      return;
+    }
+
+    if (this.#mode === Mode.DEFAULT) {
+      replace(this.#pointComponent, prevPointComponent);
+    }
+
+    if (this.#mode === Mode.EDITING) {
+      replace(this.#editPointComponent, prevPointEditComponent);
+    }
+
+    remove(prevPointComponent);
+    remove(prevPointEditComponent);
   }
 
   resetView() {
@@ -66,7 +85,8 @@ export default class PointPresenter {
     this.#replaceFormToCard();
   };
 
-  #handleSubmit = () => {
+  #handleSubmit = (point) => {
+    this.#handleDataChange(point);
     this.#replaceFormToCard();
   };
 

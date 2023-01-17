@@ -4,7 +4,7 @@ import SortView from '../view/sort-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import PointPresenter from './point-presenter.js';
 import {SortType} from '../const.js';
-import {sortPointsDateUp, sortPointsPriceDown} from '../utils.js';
+import {sortPointsDateUp, sortPointsPriceDown, updateItem} from '../utils.js';
 
 
 export default class ListPresenter {
@@ -60,7 +60,7 @@ export default class ListPresenter {
   }
 
   #renderPoint(point) {
-    const pointPresenter = new PointPresenter({listComponent: this.#listComponent.element, onModeChange: this.#handleModeChange});
+    const pointPresenter = new PointPresenter({listComponent: this.#listComponent.element, onModeChange: this.#handleModeChange, onDataChange: this.#handlePointChange});
     pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
   }
@@ -97,5 +97,10 @@ export default class ListPresenter {
     this.#currentSortType = sortType;
     this.#renderSort();
     this.#renderPoints();
+  };
+
+  #handlePointChange = (updatedPoint) => {
+    this.#listPoints = updateItem(this.#listPoints, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
   };
 }
