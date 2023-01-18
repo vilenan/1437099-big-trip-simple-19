@@ -23,9 +23,10 @@ export default class ListPresenter {
     this.#pointsModel = pointsModel;
   }
 
-  init() {
+  init(filterObj) {
     this.#listPoints = [...this.#pointsModel.points];
     this.#destinationsList = [...this.#pointsModel.destinations];
+    this.filter = filterObj;
 
     if (this.#listPoints.length === 0) {
       this.#renderEmptyList();
@@ -95,6 +96,12 @@ export default class ListPresenter {
     }
     this.#currentSortType = sortType;
     this.#renderSort();
+    this.#renderPoints();
+  };
+
+  handleFilterChange = (filter) => {
+    this.#clearPointList();
+    this.#listPoints = filter;
     this.#renderPoints();
   };
 

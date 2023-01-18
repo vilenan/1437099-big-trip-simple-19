@@ -22,8 +22,17 @@ const listPresenter = new ListPresenter({
 
 const filter = generateFilter(pointsModel.points);
 
+const filterChangeHandler = (filterName) => {
+  const filterObj = filter.find((item) => (item.name === filterName));
+  listPresenter.handleFilterChange(filterObj.filteredPoints);
+};
 
-render(new FilterView(filter), filtersEl);
+const filtersList = new FilterView({
+  filter,
+  onFilterChange: filterChangeHandler,
+});
+
+render(filtersList, filtersEl);
 listPresenter.init();
 
 
