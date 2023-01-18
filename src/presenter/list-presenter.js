@@ -17,7 +17,6 @@ export default class ListPresenter {
   #destinationsList = [];
   #pointPresenters = new Map();
   #currentSortType = null;
-  #sortedDefault = [];
 
   constructor({pointsContainer, pointsModel}) {
     this.#pointsContainer = pointsContainer;
@@ -27,7 +26,6 @@ export default class ListPresenter {
   init() {
     this.#listPoints = [...this.#pointsModel.points];
     this.#destinationsList = [...this.#pointsModel.destinations];
-    this.#sortedDefault = [...this.#pointsModel.points];
     this.#listPoints.forEach((point) => {
       point.destinations = this.#destinationsList;
     });
