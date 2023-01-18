@@ -23,10 +23,9 @@ export default class ListPresenter {
     this.#pointsModel = pointsModel;
   }
 
-  init(filterObj) {
+  init() {
     this.#listPoints = [...this.#pointsModel.points];
     this.#destinationsList = [...this.#pointsModel.destinations];
-    this.filter = filterObj;
 
     if (this.#listPoints.length === 0) {
       this.#renderEmptyList();
@@ -85,7 +84,7 @@ export default class ListPresenter {
       return;
     }
     this.#clearPointList();
-    remove(this.#sortComponent);
+    // remove(this.#sortComponent);
     switch(sortType){
       case SortType.PRICE_DOWN:
         this.#listPoints.sort(sortPointsPriceDown);
@@ -95,7 +94,7 @@ export default class ListPresenter {
         break;
     }
     this.#currentSortType = sortType;
-    this.#renderSort();
+    // this.#renderSort();
     this.#renderPoints();
   };
 
