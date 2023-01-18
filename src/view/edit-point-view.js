@@ -132,12 +132,14 @@ function createNewEditPointTemplate(point) {
 
 export default class EditPointView extends AbstractStatefulView {
   #point = null;
+  #destinations = null;
   #handlerSubmit = null;
   #handlerCloseClick = null;
 
-  constructor({point, onSubmit, onCloseClick}) {
+  constructor({point, destinations, onSubmit, onCloseClick}) {
     super();
     this.#point = point;
+    this.#destinations = destinations;
     this.#handlerSubmit = onSubmit;
     this.#handlerCloseClick = onCloseClick;
     this._setState(EditPointView.parsePointToState(point));
@@ -180,7 +182,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #clickChangeDestinationHandler = (evt) => {
     evt.preventDefault();
-    const tripDestination = this._state.destinations.find((item) => item.name === evt.target.value);
+    const tripDestination = this.#destinations.find((item) => item.name === evt.target.value);
     this.updateElement({
       destination: tripDestination,
     });
