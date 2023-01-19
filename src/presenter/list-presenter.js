@@ -1,4 +1,4 @@
-import {remove, render} from '../framework/render.js';
+import {render} from '../framework/render.js';
 import PointsListView from '../view/points-list-view.js';
 import SortView from '../view/sort-view.js';
 import EmptyListView from '../view/empty-list-view.js';
@@ -84,7 +84,6 @@ export default class ListPresenter {
       return;
     }
     this.#clearPointList();
-    // remove(this.#sortComponent);
     switch(sortType){
       case SortType.PRICE_DOWN:
         this.#listPoints.sort(sortPointsPriceDown);
@@ -94,7 +93,6 @@ export default class ListPresenter {
         break;
     }
     this.#currentSortType = sortType;
-    // this.#renderSort();
     this.#renderPoints();
   };
 

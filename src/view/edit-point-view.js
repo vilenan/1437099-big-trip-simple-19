@@ -1,28 +1,28 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {offersByType, POINT_TYPE} from '../mock/point.js';
+import {getOffersArray, POINT_TYPE, getOffersIdByType} from '../mock/point.js';
 import {CITIES} from '../mock/const.js';
 import {formattingFullDate} from '../utils.js';
 
 function createOffersTemplate(point) {
-  const offersByPointType = offersByType.find((offer) => offer.type === point.type);
-  return offersByPointType.offers.map((offer) => {
-    const checked = point.offers.includes(offer.id) ? 'checked' : '';
-    const offerTitleFusion = offer.title.split(' ').join('');
+  const {offers} = point;
+  return (offers.length !== 0) ? (offers.map((id) => {
+    const offerByType = getOffersArray.find((item) => (item.id === id));
+    const offerTitleFusion = offerByType.title.split(' ').join('');
     return (
       `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden"
-             id="event-offer-${offerTitleFusion}-${offer.id}"
-             type="checkbox"
-             name="event-offer-${offerTitleFusion}"
-             ${checked}>
-      <label class="event__offer-label" for="event-offer-${offerTitleFusion}-${offer.id}">
-        <span class="event__offer-title">${offer.title}</span>
+        <input class="event__offer-checkbox  visually-hidden"
+               id="event-offer-${offerTitleFusion}-${offerByType.id}"
+               type="checkbox"
+               name="event-offer-${offerTitleFusion}"
+               data-offer-id="${offerByType.id}">
+        <label class="event__offer-label" for="event-offer-${offerTitleFusion}-${offerByType.id}">
+        <span class="event__offer-title">${offerByType.title}</span>
         &plus;&euro;&nbsp;
-        <span class="event__offer-price">${offer.price}</span>
+        <span class="event__offer-price">${offerByType.price}</span>
       </label>
     </div>`
     );
-  }).join('');
+  }).join('')) : '';
 }
 
 function createTypesTemplate(point) {
@@ -115,7 +115,7 @@ function createNewEditPointTemplate(point) {
           </button>
         </header>
         <section class="event__details">
-          <section class="event__section  event__section--offers">
+          <section class="event__section  event__section--offers ${point.offers.length === 0 ? 'visually-hidden' : ''}">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
@@ -152,7 +152,6 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#clickChangeTypeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#clickChangeDestinationHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#clickChangePriceHandler);
-    this.element.querySelector('.event__available-offers').addEventListener('input', this.#clickOffersHandler);
   }
 
   #submitHandler = (evt) => {
@@ -170,6 +169,7 @@ export default class EditPointView extends AbstractStatefulView {
     const tripType = evt.target.value;
     this.updateElement({
       type: tripType,
+      offers: getOffersIdByType(tripType),
     });
   };
 
@@ -185,21 +185,6 @@ export default class EditPointView extends AbstractStatefulView {
     const tripDestination = this.#destinations.find((item) => item.name === evt.target.value);
     this.updateElement({
       destination: tripDestination,
-    });
-  };
-
-  #clickOffersHandler = (evt) => {
-    evt.preventDefault();
-    const offer = evt.target.closest('.event__offer-checkbox');
-    const offers = this.element.querySelectorAll('.event__offer-checkbox');
-    if(!offer){
-      return;
-    }
-    offer.toggleAttribute('checked');
-    const checkedOffers = [...offers].filter((item) => item.hasAttribute('checked'));
-    const checkedOffersId = checkedOffers.map((item) => item.id);
-    this._setState({
-      offers: checkedOffersId,
     });
   };
 

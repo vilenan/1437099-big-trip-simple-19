@@ -1,10 +1,8 @@
 import {CITIES, DESCRIPTION, OFFER_TITLE, PHOTO, POINT_TYPE} from './const.js';
-import {generateId, getRandomArrayElement, getRandomNumber} from '../utils.js';
+import {getRandomArrayElement, getRandomNumber} from '../utils.js';
 import {nanoid} from 'nanoid';
 
 const POINT_COUNT = 4;
-
-const getId2 = generateId();
 
 function getPictureSrc() {
   return `${PHOTO}${Math.random()}`;
@@ -33,65 +31,32 @@ const destinationsArray = CITIES.map((city, index) => ({
   pictures: Array.from({length: 4}, getPicture),
 }));
 
-function getMockOffer() {
-  const id = getId2();
-  return {
-    id,
-    title: OFFER_TITLE[id],
-    price: getRandomNumber(30, 120)
-  };
+const getOffersArray = OFFER_TITLE.map((title, index) => ({
+  id: index,
+  title: title,
+  price: getRandomNumber(30, 120)
+}));
+
+const offersByType = POINT_TYPE.map((type) => ({
+  type:type,
+  offers: getOffersArray.slice(getRandomNumber(0, getOffersArray.length + 1)),
+}));
+
+function getOffersIdByType(type) {
+  const offersForType = offersByType.find((offer) => (offer.type === type));
+  return offersForType.offers.map((offer) => (offer.id));
 }
 
-const getOffersArray = Array.from({length: OFFER_TITLE.length - 1}, getMockOffer);
-
-const offersByType = [
-  {
-    type: 'taxi',
-    offers: getOffersArray.slice(2, 5),
-  },
-  {
-    type: 'bus',
-    offers: getOffersArray,
-  },
-  {
-    type: 'train',
-    offers: getOffersArray.slice(3),
-  },
-  {
-    type: 'ship',
-    offers: getOffersArray.slice(5),
-  },
-  {
-    type: 'drive',
-    offers: getOffersArray,
-  },
-  {
-    type: 'flight',
-    offers: getOffersArray.slice(2),
-  },
-  {
-    type: 'check-in',
-    offers: getOffersArray,
-  },
-  {
-    type:  'sightseeing',
-    offers: getOffersArray.slice(1, 4),
-  },
-  {
-    type:  'restaurant',
-    offers: getOffersArray,
-  },
-];
-
 function getRandomMockPoint() {
+  const pointType = getRandomArrayElement(POINT_TYPE);
   return {
     id: nanoid(),
     basePrice: getRandomNumber(100, 1200),
     dateFrom: new Date(2021, getRandomNumber(1, 12), getRandomNumber(1, 30), getRandomNumber(0, 24), 24, 0),
     dateTo: new Date(getRandomNumber(2022, 2023), getRandomNumber(1, 12), getRandomNumber(1, 30), getRandomNumber(0, 24), 24, 0),
     destination: getRandomArrayElement(destinationsArray),
-    type: getRandomArrayElement(POINT_TYPE),
-    offers: [getOffersArray[1].id, getOffersArray[2].id]
+    type: pointType,
+    offers: getOffersIdByType(pointType),
   };
 }
 
@@ -99,4 +64,4 @@ function getRandomMockPoints() {
   return Array.from({length: POINT_COUNT}, getRandomMockPoint);
 }
 
-export {getRandomMockPoints, offersByType, getOffersArray, POINT_TYPE, destinationsArray};
+export {getRandomMockPoints, offersByType, getOffersArray, POINT_TYPE, destinationsArray, getOffersIdByType};
