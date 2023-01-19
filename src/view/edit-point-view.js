@@ -2,6 +2,8 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {getOffersArray, POINT_TYPE, getOffersIdByType} from '../mock/point.js';
 import {CITIES} from '../mock/const.js';
 import {formattingFullDate} from '../utils.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 function createOffersTemplate(point) {
   const {offers} = point;
@@ -135,6 +137,8 @@ export default class EditPointView extends AbstractStatefulView {
   #destinations = null;
   #handlerSubmit = null;
   #handlerCloseClick = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   constructor({point, destinations, onSubmit, onCloseClick}) {
     super();
@@ -152,6 +156,48 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#clickChangeTypeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#clickChangeDestinationHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#clickChangePriceHandler);
+    this.#setDatepicker();
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  }
+
+  #handleStartDataChange = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate,
+    });
+  };
+
+  #handleEndDataChange = ([userDate]) => {
+    this.updateElement({
+      dateTo: userDate,
+    });
+  };
+
+  #setDatepicker() {
+    this.#datepickerFrom = flatpickr(this.element.querySelector('input[name="event-start-time"]'),
+      {
+        dateFormat: 'd/m/y H:i',
+        onChange: this.#handleStartDataChange,
+        defaultDate: this._state.dateFrom,
+      });
+    this.#datepickerTo = flatpickr(this.element.querySelector('input[name="event-end-time"]'),
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateTo,
+        onChange: this.#handleEndDataChange,
+      });
   }
 
   #submitHandler = (evt) => {
