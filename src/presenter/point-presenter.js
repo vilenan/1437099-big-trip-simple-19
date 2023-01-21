@@ -12,16 +12,23 @@ export default class PointPresenter {
   #editPointComponent = null;
   #pointComponent = null;
   #handleModeChange = null;
+  #handleDataChange = null;
   #point = null;
+  #destinationsList = null;
   #mode = Mode.DEFAULT;
 
-  constructor({listComponent, onModeChange}) {
+  constructor({listComponent, onModeChange, onDataChange}) {
     this.#listComponent = listComponent;
     this.#handleModeChange = onModeChange;
+    this.#handleDataChange = onDataChange;
   }
 
-  init(point){
+  init(point, destinations){
     this.#point = point;
+    this.#destinationsList = destinations;
+
+    const prevPointComponent = this.#pointComponent;
+    const prevPointEditComponent = this.#editPointComponent;
 
     this.#pointComponent = new PointView({
       point: this.#point,
@@ -30,15 +37,31 @@ export default class PointPresenter {
 
     this.#editPointComponent = new EditPointView({
       point: this.#point,
+      destinations: this.#destinationsList,
       onSubmit: this.#handleSubmit,
       onCloseClick: this.#handleCloseClick
     });
 
-    render(this.#pointComponent, this.#listComponent);
+    if (prevPointComponent === null || prevPointEditComponent === null) {
+      render(this.#pointComponent, this.#listComponent);
+      return;
+    }
+
+    if (this.#mode === Mode.DEFAULT) {
+      replace(this.#pointComponent, prevPointComponent);
+    }
+
+    if (this.#mode === Mode.EDITING) {
+      replace(this.#editPointComponent, prevPointEditComponent);
+    }
+
+    remove(prevPointComponent);
+    remove(prevPointEditComponent);
   }
 
   resetView() {
     if(this.#mode !== Mode.DEFAULT){
+      this.#editPointComponent.reset(this.#point);
       this.#replaceFormToCard();
     }
   }
@@ -61,10 +84,12 @@ export default class PointPresenter {
   };
 
   #handleCloseClick = () => {
+    this.#editPointComponent.reset(this.#point);
     this.#replaceFormToCard();
   };
 
-  #handleSubmit = () => {
+  #handleSubmit = (point) => {
+    this.#handleDataChange(point);
     this.#replaceFormToCard();
   };
 
@@ -73,6 +98,7 @@ export default class PointPresenter {
       evt.preventDefault();
       this.#replaceFormToCard();
       document.removeEventListener('keydown', this.#escKeyDownHandler);
+      this.#editPointComponent.reset(this.#point);
     }
   };
 

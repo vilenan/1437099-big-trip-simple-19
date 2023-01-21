@@ -1,10 +1,10 @@
-import {remove, render} from '../framework/render.js';
+import {render} from '../framework/render.js';
 import PointsListView from '../view/points-list-view.js';
 import SortView from '../view/sort-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import PointPresenter from './point-presenter.js';
 import {SortType} from '../const.js';
-import {sortPointsDateUp, sortPointsPriceDown} from '../utils.js';
+import {sortPointsDateUp, sortPointsPriceDown, updateItem} from '../utils.js';
 
 
 export default class ListPresenter {
@@ -14,9 +14,9 @@ export default class ListPresenter {
   #pointsContainer = null;
   #pointsModel = null;
   #listPoints = [];
+  #destinationsList = [];
   #pointPresenters = new Map();
   #currentSortType = null;
-  #sortedDefault = [];
 
   constructor({pointsContainer, pointsModel}) {
     this.#pointsContainer = pointsContainer;
@@ -25,7 +25,7 @@ export default class ListPresenter {
 
   init() {
     this.#listPoints = [...this.#pointsModel.points];
-    this.#sortedDefault = [...this.#pointsModel.points];
+    this.#destinationsList = [...this.#pointsModel.destinations];
 
     if (this.#listPoints.length === 0) {
       this.#renderEmptyList();
@@ -54,15 +54,19 @@ export default class ListPresenter {
     render(this.#emptyListComponent, this.#pointsContainer);
   }
 
-  #renderPoint(point) {
-    const pointPresenter = new PointPresenter({listComponent: this.#listComponent.element, onModeChange: this.#handleModeChange});
-    pointPresenter.init(point);
+  #renderPoint(point, destinations) {
+    const pointPresenter = new PointPresenter({
+      listComponent: this.#listComponent.element,
+      onModeChange: this.#handleModeChange,
+      onDataChange: this.#handlePointChange});
+    pointPresenter.init(point, destinations);
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
   #renderPoints() {
+    const destinations = this.#destinationsList;
     this.#listPoints.forEach((point) => {
-      this.#renderPoint(point);
+      this.#renderPoint(point, destinations);
     });
   }
 
@@ -80,7 +84,6 @@ export default class ListPresenter {
       return;
     }
     this.#clearPointList();
-    remove(this.#sortComponent);
     switch(sortType){
       case SortType.PRICE_DOWN:
         this.#listPoints.sort(sortPointsPriceDown);
@@ -90,7 +93,17 @@ export default class ListPresenter {
         break;
     }
     this.#currentSortType = sortType;
-    this.#renderSort();
     this.#renderPoints();
+  };
+
+  handleFilterChange = (filter) => {
+    this.#clearPointList();
+    this.#listPoints = filter;
+    this.#renderPoints();
+  };
+
+  #handlePointChange = (updatedPoint) => {
+    this.#listPoints = updateItem(this.#listPoints, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
   };
 }
