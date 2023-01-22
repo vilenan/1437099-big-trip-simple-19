@@ -244,13 +244,13 @@ export default class EditPointView extends AbstractStatefulView {
     const checkedOfferId = Number(item.dataset.offerId);
     if(item.hasAttribute('checked')){
       item.removeAttribute('checked');
-      this.#point.offers = this.#point.offers.filter((id) => id !== checkedOfferId);
+      this._state.offers = this._state.offers.filter((id) => id !== checkedOfferId);
     } else {
       item.setAttribute('checked', 'checked');
-      this.#point.offers.push(checkedOfferId);
+      this._state.offers.push(checkedOfferId);
     }
     this._setState({
-      offers: this.#point.offers,
+      offers: this._state.offers,
     });
   };
 
