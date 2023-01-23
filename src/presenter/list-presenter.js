@@ -4,7 +4,7 @@ import SortView from '../view/sort-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import PointPresenter from './point-presenter.js';
 import {SortType} from '../const.js';
-import {sortPointsDateUp, sortPointsPriceDown, updateItem} from '../utils.js';
+import {sortPointsDateUp, sortPointsPriceDown} from '../utils.js';
 
 
 export default class ListPresenter {
@@ -13,27 +13,40 @@ export default class ListPresenter {
   #emptyListComponent = new EmptyListView();
   #pointsContainer = null;
   #pointsModel = null;
-  #listPoints = [];
-  #destinationsList = [];
   #pointPresenters = new Map();
   #currentSortType = null;
 
   constructor({pointsContainer, pointsModel}) {
     this.#pointsContainer = pointsContainer;
     this.#pointsModel = pointsModel;
+    this.#pointsModel.addObserver(this.#handleModelEvent);
+  }
+
+  get points() {
+    switch (this.#currentSortType) {
+      case SortType.DATE_UP:
+        return [...this.#pointsModel.points].sort(sortPointsDateUp);
+      case SortType.PRICE_DOWN:
+        return [...this.#pointsModel.points].sort(sortPointsPriceDown);
+    }
+    return this.#pointsModel.points;
+  }
+
+  set points(updatePoints) {
+    this.#pointsModel.points = updatePoints;
+  }
+
+  get destinations() {
+    return this.#pointsModel.destinations;
   }
 
   init() {
-    this.#listPoints = [...this.#pointsModel.points];
-    this.#destinationsList = [...this.#pointsModel.destinations];
-
-    if (this.#listPoints.length === 0) {
+    if (this.points.length === 0) {
       this.#renderEmptyList();
     } else {
       this.#renderPointsList();
       this.#currentSortType = SortType.DATE_UP;
       this.#renderSort();
-      this.#listPoints.sort(sortPointsDateUp);
       this.#renderPoints();
     }
   }
@@ -58,14 +71,15 @@ export default class ListPresenter {
     const pointPresenter = new PointPresenter({
       listComponent: this.#listComponent.element,
       onModeChange: this.#handleModeChange,
-      onDataChange: this.#handlePointChange});
+      onDataChange: this.#handleViewAction,
+    });
     pointPresenter.init(point, destinations);
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
   #renderPoints() {
-    const destinations = this.#destinationsList;
-    this.#listPoints.forEach((point) => {
+    const destinations = this.destinations;
+    this.points.forEach((point) => {
       this.#renderPoint(point, destinations);
     });
   }
@@ -84,26 +98,26 @@ export default class ListPresenter {
       return;
     }
     this.#clearPointList();
-    switch(sortType){
-      case SortType.PRICE_DOWN:
-        this.#listPoints.sort(sortPointsPriceDown);
-        break;
-      case SortType.DATE_UP:
-        this.#listPoints.sort(sortPointsDateUp);
-        break;
-    }
     this.#currentSortType = sortType;
     this.#renderPoints();
   };
 
   handleFilterChange = (filter) => {
     this.#clearPointList();
-    this.#listPoints = filter;
+    this.points = filter;
     this.#renderPoints();
   };
 
-  #handlePointChange = (updatedPoint) => {
-    this.#listPoints = updateItem(this.#listPoints, updatedPoint);
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  // #handlePointChange = (updatedPoint) => {
+  //   this.points = updateItem(this.points, updatedPoint);
+  //   this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  // };
+
+  #handleModelEvent = (updateType, data) => {
+    console.log(updateType, data);
+  };
+
+  #handleViewAction = (actionType, updateType, update) => {
+    console.log(actionType, updateType, update);
   };
 }
