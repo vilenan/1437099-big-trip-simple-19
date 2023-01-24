@@ -1,4 +1,4 @@
-import {render} from '../framework/render.js';
+import {render, remove} from '../framework/render.js';
 import PointsListView from '../view/points-list-view.js';
 import SortView from '../view/sort-view.js';
 import EmptyListView from '../view/empty-list-view.js';
@@ -41,18 +41,8 @@ export default class ListPresenter {
   }
 
   init() {
-    if (this.points.length === 0) {
-      this.#renderEmptyList();
-    } else {
-      this.#renderPointsList();
-      this.#currentSortType = SortType.DATE_UP;
-      this.#renderSort();
-      this.#renderPoints();
-    }
-  }
-
-  #renderPointsList(){
-    render(this.#listComponent, this.#pointsContainer);
+    this.#currentSortType = SortType.DATE_UP;
+    this.#renderBoard();
   }
 
   #renderSort() {
@@ -63,8 +53,24 @@ export default class ListPresenter {
     render(this.#sortComponent, this.#listComponent.element);
   }
 
-  #renderEmptyList(){
-    render(this.#emptyListComponent, this.#pointsContainer);
+  #renderBoard() {
+    render(this.#listComponent, this.#pointsContainer);
+
+    const points = this.points;
+    if (points.length === 0) {
+      render(this.#emptyListComponent, this.#pointsContainer);
+      return;
+    }
+
+    this.#renderSort();
+    this.#renderPoints();
+  }
+
+  #renderPoints() {
+    const destinations = this.destinations;
+    this.points.forEach((point) => {
+      this.#renderPoint(point, destinations);
+    });
   }
 
   #renderPoint(point, destinations) {
@@ -77,16 +83,16 @@ export default class ListPresenter {
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
-  #renderPoints() {
-    const destinations = this.destinations;
-    this.points.forEach((point) => {
-      this.#renderPoint(point, destinations);
-    });
-  }
-
-  #clearPointList() {
+  #clearBoard({resetSortType = false} = {}) {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
+
+    remove(this.#sortComponent);
+    remove(this.#emptyListComponent);
+
+    if(resetSortType) {
+      this.#currentSortType = SortType.DATE_UP;
+    }
   }
 
   #handleModeChange = () => {
@@ -97,13 +103,13 @@ export default class ListPresenter {
     if(this.#currentSortType === sortType) {
       return;
     }
-    this.#clearPointList();
+    this.#clearBoard();
     this.#currentSortType = sortType;
     this.#renderPoints();
   };
 
   handleFilterChange = (filter) => {
-    this.#clearPointList();
+    this.#clearBoard();
     this.points = filter;
     this.#renderPoints();
   };
@@ -114,8 +120,12 @@ export default class ListPresenter {
         this.#pointPresenters.get(data.id).init(data);
         break;
       case UpdateType.MINOR:
+        this.#clearBoard();
+        this.#renderBoard();
         break;
       case UpdateType.MAJOR:
+        this.#clearBoard({resetSortType: true});
+        this.#renderBoard();
         break;
     }
   };

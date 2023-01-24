@@ -142,13 +142,15 @@ export default class EditPointView extends AbstractStatefulView {
   #handlerCloseClick = null;
   #datepickerFrom = null;
   #datepickerTo = null;
+  #handleDeleteClick = null;
 
-  constructor({point, destinations, onSubmit, onCloseClick}) {
+  constructor({point, destinations, onSubmit, onCloseClick, onDeleteClick}) {
     super();
     this.#point = point;
     this.#destinations = destinations;
     this.#handlerSubmit = onSubmit;
     this.#handlerCloseClick = onCloseClick;
+    this.#handleDeleteClick = onDeleteClick;
     this._setState(EditPointView.parsePointToState(point));
     this._restoreHandlers();
   }
@@ -160,6 +162,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#clickChangeDestinationHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#clickChangePriceHandler);
     this.element.querySelector('.event__available-offers').addEventListener('input', this.#clickOfferHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteClickHandler);
     this.#setDatepicker();
   }
 
@@ -236,6 +239,11 @@ export default class EditPointView extends AbstractStatefulView {
     this.updateElement({
       destination: tripDestination,
     });
+  };
+
+  #deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EditPointView.parseStateToPoint(this._state));
   };
 
   #clickOfferHandler = (evt) => {
