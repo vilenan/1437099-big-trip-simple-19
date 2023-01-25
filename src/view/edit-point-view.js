@@ -1,26 +1,29 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {getOffersArray, POINT_TYPE, getOffersIdByType} from '../mock/point.js';
+import {POINT_TYPE, getOffersByType} from '../mock/point.js';
 import {CITIES} from '../mock/const.js';
 import {formattingFullDate} from '../utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
 function createOffersTemplate(point) {
-  const {offers} = point;
-  return (offers.length !== 0) ? (offers.map((id) => {
-    const offerByType = getOffersArray.find((item) => (item.id === id));
-    const offerTitleFusion = offerByType.title.split(' ').join('');
+  const {type, offers} = point;
+  const objOffersByType = getOffersByType(type);
+  const offersByPointType = objOffersByType.offers;
+  return (offersByPointType.length !== 0) ? (offersByPointType.map((offer) => {
+    const isOfferChecked = (offers.includes(offer.id)) ? 'checked' : '';
+    const offerTitleFusion = offer.title.split(' ').join('');
     return (
       `<div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden"
-               id="event-offer-${offerTitleFusion}-${offerByType.id}"
+               id="event-offer-${offerTitleFusion}-${offer.id}"
                type="checkbox"
                name="event-offer-${offerTitleFusion}"
-               data-offer-id="${offerByType.id}">
-        <label class="event__offer-label" for="event-offer-${offerTitleFusion}-${offerByType.id}">
-        <span class="event__offer-title">${offerByType.title}</span>
+               data-offer-id="${offer.id}"
+               ${isOfferChecked}>
+        <label class="event__offer-label" for="event-offer-${offerTitleFusion}-${offer.id}">
+        <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
-        <span class="event__offer-price">${offerByType.price}</span>
+        <span class="event__offer-price">${offer.price}</span>
       </label>
     </div>`
     );
@@ -117,7 +120,7 @@ function createNewEditPointTemplate(point) {
           </button>
         </header>
         <section class="event__details">
-          <section class="event__section  event__section--offers ${point.offers.length === 0 ? 'visually-hidden' : ''}">
+          <section class="event__section  event__section--offers ${getOffersByType(type).offers.length === 0 ? 'visually-hidden' : ''}">
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
@@ -139,13 +142,15 @@ export default class EditPointView extends AbstractStatefulView {
   #handlerCloseClick = null;
   #datepickerFrom = null;
   #datepickerTo = null;
+  #handleDeleteClick = null;
 
-  constructor({point, destinations, onSubmit, onCloseClick}) {
+  constructor({point, destinations, onSubmit, onCloseClick, onDeleteClick}) {
     super();
     this.#point = point;
     this.#destinations = destinations;
     this.#handlerSubmit = onSubmit;
     this.#handlerCloseClick = onCloseClick;
+    this.#handleDeleteClick = onDeleteClick;
     this._setState(EditPointView.parsePointToState(point));
     this._restoreHandlers();
   }
@@ -156,6 +161,8 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#clickChangeTypeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#clickChangeDestinationHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#clickChangePriceHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('input', this.#clickOfferHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteClickHandler);
     this.#setDatepicker();
   }
 
@@ -215,7 +222,7 @@ export default class EditPointView extends AbstractStatefulView {
     const tripType = evt.target.value;
     this.updateElement({
       type: tripType,
-      offers: getOffersIdByType(tripType),
+      offers: []
     });
   };
 
@@ -231,6 +238,27 @@ export default class EditPointView extends AbstractStatefulView {
     const tripDestination = this.#destinations.find((item) => item.name === evt.target.value);
     this.updateElement({
       destination: tripDestination,
+    });
+  };
+
+  #deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EditPointView.parseStateToPoint(this._state));
+  };
+
+  #clickOfferHandler = (evt) => {
+    evt.preventDefault();
+    const item = evt.target;
+    const checkedOfferId = Number(item.dataset.offerId);
+    if(item.hasAttribute('checked')){
+      item.removeAttribute('checked');
+      this._state.offers = this._state.offers.filter((id) => id !== checkedOfferId);
+    } else {
+      item.setAttribute('checked', 'checked');
+      this._state.offers.push(checkedOfferId);
+    }
+    this._setState({
+      offers: this._state.offers,
     });
   };
 

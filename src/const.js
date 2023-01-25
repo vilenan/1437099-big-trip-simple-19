@@ -8,4 +8,17 @@ const SortType = {
   PRICE_DOWN: 'price-down',
 };
 
-export {FilterType, SortType};
+const UserAction = {
+  UPDATE_TASK: 'UPDATE_TASK',
+  ADD_TASK: 'ADD_TASK',
+  DELETE_TASK: 'DELETE_TASK',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+
+};
+
+export {FilterType, SortType, UserAction, UpdateType};
