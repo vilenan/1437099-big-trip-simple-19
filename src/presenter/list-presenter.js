@@ -3,33 +3,44 @@ import PointsListView from '../view/points-list-view.js';
 import SortView from '../view/sort-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import PointPresenter from './point-presenter.js';
-import {SortType, UpdateType, UserAction} from '../const.js';
+import {SortType, FilterType, UpdateType, UserAction} from '../const.js';
 import {sortPointsDateUp, sortPointsPriceDown} from '../utils.js';
+import {filters} from '../utils/filter.js';
 
 
 export default class ListPresenter {
+  #pointsContainer = null;
+  #pointsModel = null;
+  #filterModel = null;
+
   #listComponent = new PointsListView();
   #sortComponent = null;
   #emptyListComponent = new EmptyListView();
-  #pointsContainer = null;
-  #pointsModel = null;
   #pointPresenters = new Map();
-  #currentSortType = null;
+  #currentSortType = SortType.DATE_UP;
+  #filterType = FilterType.EVERYTHING;
 
-  constructor({pointsContainer, pointsModel}) {
+  constructor({pointsContainer, pointsModel, filterModel}) {
     this.#pointsContainer = pointsContainer;
     this.#pointsModel = pointsModel;
+    this.#filterModel = filterModel;
+
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
+    const points = this.#pointsModel.points;
+    this.#filterType = this.#filterModel.filterType;
+    const filteredPoints = filters[this.#filterType](points);
+
     switch (this.#currentSortType) {
       case SortType.DATE_UP:
-        return [...this.#pointsModel.points].sort(sortPointsDateUp);
+        return filteredPoints.sort(sortPointsDateUp);
       case SortType.PRICE_DOWN:
-        return [...this.#pointsModel.points].sort(sortPointsPriceDown);
+        return filteredPoints.sort(sortPointsPriceDown);
     }
-    return this.#pointsModel.points;
+    return filteredPoints;
   }
 
   set points(updatePoints) {
@@ -41,9 +52,46 @@ export default class ListPresenter {
   }
 
   init() {
-    this.#currentSortType = SortType.DATE_UP;
     this.#renderBoard();
   }
+
+  #handleViewAction = (actionType, updateType, update) => {
+    switch (actionType){
+      case UserAction.UPDATE_TASK:
+        this.#pointsModel.updatePoint(updateType, update);
+        break;
+      case UserAction.ADD_TASK:
+        this.#pointsModel.addPoint(updateType, update);
+        break;
+      case UserAction.DELETE_TASK:
+        this.#pointsModel.deletePoint(updateType, update);
+    }
+  };
+
+  #handleModelEvent = (updateType, data) => {
+    switch (updateType){
+      case UpdateType.PATCH:
+        this.#pointPresenters.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        this.#clearBoard();
+        this.#renderBoard();
+        break;
+      case UpdateType.MAJOR:
+        this.#clearBoard({resetSortType: true});
+        this.#renderBoard();
+        break;
+    }
+  };
+
+  #handleSortChange = (sortType) => {
+    if(this.#currentSortType === sortType) {
+      return;
+    }
+    this.#currentSortType = sortType;
+    this.#clearBoard();
+    this.#renderBoard();
+  };
 
   #renderSort() {
     this.#sortComponent = new SortView({
@@ -97,49 +145,5 @@ export default class ListPresenter {
 
   #handleModeChange = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
-  };
-
-  #handleSortChange = (sortType) => {
-    if(this.#currentSortType === sortType) {
-      return;
-    }
-    this.#clearBoard();
-    this.#currentSortType = sortType;
-    this.#renderPoints();
-  };
-
-  handleFilterChange = (filter) => {
-    this.#clearBoard();
-    this.points = filter;
-    this.#renderPoints();
-  };
-
-  #handleModelEvent = (updateType, data) => {
-    switch (updateType){
-      case UpdateType.PATCH:
-        this.#pointPresenters.get(data.id).init(data);
-        break;
-      case UpdateType.MINOR:
-        this.#clearBoard();
-        this.#renderBoard();
-        break;
-      case UpdateType.MAJOR:
-        this.#clearBoard({resetSortType: true});
-        this.#renderBoard();
-        break;
-    }
-  };
-
-  #handleViewAction = (actionType, updateType, update) => {
-    switch (actionType){
-      case UserAction.UPDATE_TASK:
-        this.#pointsModel.updatePoint(updateType, update);
-        break;
-      case UserAction.ADD_TASK:
-        this.#pointsModel.addPoint(updateType, update);
-        break;
-      case UserAction.DELETE_TASK:
-        this.#pointsModel.deletePoint(updateType, update);
-    }
   };
 }

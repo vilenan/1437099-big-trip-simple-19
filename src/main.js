@@ -1,9 +1,8 @@
-import {render} from './framework/render.js';
-import FilterView from './view/filter-view.js';
-import ListPresenter from './presenter/list-presenter.js';
-import PointsModel from './model/points-model.js';
-import {generateFilter} from './utils.js';
 import { getRandomMockPoints, destinationsArray } from './mock/point.js';
+import PointsModel from './model/points-model.js';
+import FilterModel from './model/filter-model.js';
+import FilterPresenter from './presenter/filter-presenter.js';
+import ListPresenter from './presenter/list-presenter.js';
 
 const siteHeaderEl = document.querySelector('.page-header');
 const filtersEl = siteHeaderEl.querySelector('.trip-controls__filters');
@@ -15,24 +14,21 @@ const pointsModel = new PointsModel({
   destinations: destinationsArray,
 });
 
-const listPresenter = new ListPresenter({
-  pointsContainer: pointsContainerEl,
+const filterModel = new FilterModel();
+
+const filterPresenter = new FilterPresenter({
+  filterContainer: filtersEl,
+  filterModel,
   pointsModel,
 });
 
-const filter = generateFilter(pointsModel.points);
-
-const filterChangeHandler = (filterName) => {
-  const filterObj = filter.find((item) => (item.name === filterName));
-  listPresenter.handleFilterChange(filterObj.filteredPoints);
-};
-
-const filtersList = new FilterView({
-  filter,
-  onFilterChange: filterChangeHandler,
+const listPresenter = new ListPresenter({
+  pointsContainer: pointsContainerEl,
+  pointsModel,
+  filterModel,
 });
 
-render(filtersList, filtersEl);
+filterPresenter.init();
 listPresenter.init();
 
 
