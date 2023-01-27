@@ -15,10 +15,10 @@ export default class ListPresenter {
 
   #listComponent = new PointsListView();
   #sortComponent = null;
-  #emptyListComponent = new EmptyListView();
   #pointPresenters = new Map();
   #currentSortType = SortType.DATE_UP;
   #filterType = FilterType.EVERYTHING;
+  #emptyListComponent = null;
 
   constructor({pointsContainer, pointsModel, filterModel}) {
     this.#pointsContainer = pointsContainer;
@@ -53,6 +53,13 @@ export default class ListPresenter {
 
   init() {
     this.#renderBoard();
+  }
+
+  #renderNoTask() {
+    this.#emptyListComponent = new EmptyListView({
+      filterType: this.#filterModel.filterType
+    });
+    render(this.#emptyListComponent, this.#listComponent.element);
   }
 
   #handleViewAction = (actionType, updateType, update) => {
@@ -106,7 +113,7 @@ export default class ListPresenter {
 
     const points = this.points;
     if (points.length === 0) {
-      render(this.#emptyListComponent, this.#pointsContainer);
+      this.#renderNoTask();
       return;
     }
 
@@ -136,7 +143,10 @@ export default class ListPresenter {
     this.#pointPresenters.clear();
 
     remove(this.#sortComponent);
-    remove(this.#emptyListComponent);
+
+    if (this.#emptyListComponent) {
+      remove(this.#emptyListComponent);
+    }
 
     if(resetSortType) {
       this.#currentSortType = SortType.DATE_UP;
