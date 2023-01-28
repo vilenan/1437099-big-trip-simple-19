@@ -19,7 +19,9 @@ const pointsModel = new PointsModel({
 
 const filterModel = new FilterModel();
 
-const newPointButtonComponent = new NewPointButtonView();
+const newPointButtonComponent = new NewPointButtonView({
+  onClick: handleNewPointButtonClick,
+});
 render(newPointButtonComponent, headerContentEl);
 
 const filterPresenter = new FilterPresenter({
@@ -32,7 +34,16 @@ const listPresenter = new ListPresenter({
   pointsContainer: pointsContainerEl,
   pointsModel,
   filterModel,
+  onNewPointDestroy: handleNewPointFormClose,
 });
+
+function handleNewPointFormClose() {
+  newPointButtonComponent.element.disabled = false;
+}
+function handleNewPointButtonClick() {
+  listPresenter.createPoint();
+  newPointButtonComponent.element.disabled = true;
+}
 
 filterPresenter.init();
 listPresenter.init();

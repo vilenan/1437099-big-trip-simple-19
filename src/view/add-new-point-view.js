@@ -1,8 +1,19 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { offersByType } from '../mock/point.js';
+import {offersByType} from '../mock/point.js';
 import {formattingFullDate} from '../utils.js';
+import dayjs from 'dayjs';
+import {POINT_TYPE} from '../mock/point.js';
 
-function getOffersTemplate(point) {
+const BLANK_POINT = {
+  basePrice: 0,
+  dateFrom: dayjs().toDate(),
+  dateTo: dayjs().toDate(),
+  destination: -1,
+  offers: [],
+  type: POINT_TYPE[0],
+};
+
+function getOffersTemplate(point = BLANK_POINT) {
   const offersByPointType = offersByType.find((offer) => offer.type === point.type);
   return offersByPointType.offers.map((offer) => {
     const checked = point.offers.includes(offer.id) ? 'checked' : '';
@@ -135,7 +146,7 @@ function createNewPointTemplate(point) {
 
             <div class="event__photos-container">
               <div class="event__photos-tape">
-                ${getPicturesListTemplate(destination.pictures)}
+
               </div>
             </div>
           </section>
@@ -146,14 +157,15 @@ function createNewPointTemplate(point) {
 }
 
 export default class AddNewPointView extends AbstractView {
-  #point = null;
   #handlerSubmit = null;
+  #handleCloseClick = null;
 
-  constructor({point, onSubmit}) {
+  constructor({onSubmit, onDeleteClick}) {
     super();
-    this.#point = point;
     this.#handlerSubmit = onSubmit;
+    this.#handleCloseClick = onDeleteClick;
     this.element.querySelector('form').addEventListener('submit', this.#submitHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#clickHandler);
   }
 
   #submitHandler = (evt) => {
@@ -161,7 +173,12 @@ export default class AddNewPointView extends AbstractView {
     this.#handlerSubmit();
   };
 
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleCloseClick();
+  };
+
   get template() {
-    return createNewPointTemplate(this.#point);
+    return createNewPointTemplate(BLANK_POINT);
   }
 }
