@@ -37,10 +37,12 @@ export default class FilterPresenter {
 
   init() {
     const filter = this.filters;
+    const currentFilterName = this.#filterModel.filterType;
     const prevFilterComponent = this.#filterComponent;
 
     this.#filterComponent = new FilterView({
       filter,
+      currentFilterName: currentFilterName,
       onFilterChange: this.#filterChangeHandler,
     });
 

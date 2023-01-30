@@ -9,7 +9,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 const BLANK_POINT = {
   basePrice: 0,
   dateFrom: dayjs().toDate(),
-  dateTo: dayjs().toDate(),
+  dateTo: dayjs().add(1, 'day').toDate(),
   destination: undefined,
   offers: [],
   type: POINT_TYPE[0],
@@ -159,26 +159,26 @@ export default class AddNewPointView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor({destinations, offers, onSubmit, onDeleteClick}) {
+  constructor({destinations, offers, onSubmit, onCancelClick}) {
     super();
     this.#point = BLANK_POINT;
     this.#destinations = destinations;
     this.#offersByType = offers;
     this.#handlerSubmit = onSubmit;
-    this.#handleCloseClick = onDeleteClick;
+    this.#handleCloseClick = onCancelClick;
 
     this._setState(AddNewPointView.parsePointToState(this.#point));
     this._restoreHandlers();
-    this.#setDatepicker();
   }
 
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#submitHandler);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#clickHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#clickCancelHandler);
     this.element.querySelector('.event__available-offers').addEventListener('input', this.#clickOfferHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#clickChangeDestinationHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#clickChangeTypeHandler);
     this.element.querySelector('.event__input--price').addEventListener('input', this.#clickChangePriceHandler);
+    this.#setDatepicker();
   }
 
   removeElement() {
@@ -267,7 +267,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     this.#handlerSubmit(AddNewPointView.parseStateToPoint(this._state));
   };
 
-  #clickHandler = (evt) => {
+  #clickCancelHandler = (evt) => {
     evt.preventDefault();
     this.#handleCloseClick();
   };
@@ -278,6 +278,10 @@ export default class AddNewPointView extends AbstractStatefulView {
 
   static parseStateToPoint(state) {
     return {...state};
+  }
+
+  reset(point) {
+    this.updateElement(AddNewPointView.parsePointToState(point));
   }
 
   get template() {
