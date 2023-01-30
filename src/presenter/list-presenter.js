@@ -29,6 +29,8 @@ export default class ListPresenter {
 
     this.#newPointPresenter = new NewPointPresenter({
       listComponent: this.#listComponent.element,
+      destinations: this.destinations,
+      offers: this.offers,
       onDataChange: this.#handleViewAction,
       onDestroy: onNewPointDestroy,
     });
@@ -57,6 +59,10 @@ export default class ListPresenter {
 
   get destinations() {
     return this.#pointsModel.destinations;
+  }
+
+  get offers() {
+    return this.#pointsModel.offers;
   }
 
   init() {
@@ -136,19 +142,20 @@ export default class ListPresenter {
   }
 
   #renderPoints() {
-    const destinations = this.destinations;
     this.points.forEach((point) => {
-      this.#renderPoint(point, destinations);
+      this.#renderPoint(point);
     });
   }
 
-  #renderPoint(point, destinations) {
+  #renderPoint(point) {
     const pointPresenter = new PointPresenter({
       listComponent: this.#listComponent.element,
+      destinations: this.destinations,
+      offers: this.offers,
       onModeChange: this.#handleModeChange,
       onDataChange: this.#handleViewAction,
     });
-    pointPresenter.init(point, destinations);
+    pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 

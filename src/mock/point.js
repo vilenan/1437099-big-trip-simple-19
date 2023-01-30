@@ -42,12 +42,12 @@ const offersByType = POINT_TYPE.map((type) => ({
   offers: getOffersArray.slice(getRandomNumber(0, getOffersArray.length + 1)),
 }));
 
-function getOffersByType(type) {
-  return offersByType.find((offer) => (offer.type === type));
+function getOffersByType(type, arr = offersByType) {
+  return arr.find((offer) => (offer.type === type));
 }
 
-function getOffersIdByType(type) {
-  const offersForType = getOffersByType(type);
+function getOffersIdByType(type, arr = offersByType) {
+  const offersForType = getOffersByType(type, arr);
   return offersForType.offers.map((offer) => (offer.id));
 }
 
@@ -60,7 +60,7 @@ function getRandomMockPoint() {
     dateTo: new Date(getRandomNumber(2022, 2023), getRandomNumber(1, 12), getRandomNumber(1, 30), getRandomNumber(0, 24), 24, 0),
     destination: getRandomArrayElement(destinationsArray),
     type: pointType,
-    offers: getOffersIdByType(pointType).slice(getRandomNumber(0, getOffersIdByType.length + 1)),
+    offers: getOffersIdByType(pointType, offersByType).slice(getRandomNumber(0, getOffersIdByType.length + 1)),
   };
 }
 

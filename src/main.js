@@ -5,6 +5,7 @@ import FilterModel from './model/filter-model.js';
 import FilterPresenter from './presenter/filter-presenter.js';
 import ListPresenter from './presenter/list-presenter.js';
 import NewPointButtonView from './view/new-point-button-view.js';
+import {offersByType} from './mock/point.js';
 
 const siteHeaderEl = document.querySelector('.page-header');
 const filtersEl = siteHeaderEl.querySelector('.trip-controls__filters');
@@ -15,6 +16,7 @@ const headerContentEl = siteHeaderEl.querySelector('.trip-main');
 const pointsModel = new PointsModel({
   points : getRandomMockPoints(),
   destinations: destinationsArray,
+  offersByType: offersByType,
 });
 
 const filterModel = new FilterModel();
