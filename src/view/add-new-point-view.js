@@ -1,10 +1,10 @@
-import AbstractView from '../framework/view/abstract-view.js';
 import {formattingFullDate} from '../utils.js';
 import dayjs from 'dayjs';
 import {POINT_TYPE, getOffersByType} from '../mock/point.js';
 import {CITIES} from '../mock/const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 const BLANK_POINT = {
   basePrice: 0,
@@ -131,10 +131,8 @@ function createAddNewPointTemplate(point, offersArr) {
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
-            <span class="visually-hidden">Open event</span>
-          </button>
+          <button class="event__reset-btn" type="reset">Cancel</button>
+
         </header>
         <section class="event__details">
           <section class="event__section  event__section--offers ${getOffersByType(type).offers.length === 0 ? 'visually-hidden' : ''}">
@@ -152,12 +150,14 @@ function createAddNewPointTemplate(point, offersArr) {
   );
 }
 
-export default class AddNewPointView extends AbstractView {
+export default class AddNewPointView extends AbstractStatefulView {
   #handlerSubmit = null;
   #handleCloseClick = null;
   #point = null;
   #destinations = null;
   #offersByType = null;
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
   constructor({destinations, offers, onSubmit, onDeleteClick}) {
     super();
@@ -166,13 +166,105 @@ export default class AddNewPointView extends AbstractView {
     this.#offersByType = offers;
     this.#handlerSubmit = onSubmit;
     this.#handleCloseClick = onDeleteClick;
+
+    this._setState(AddNewPointView.parsePointToState(this.#point));
+    this._restoreHandlers();
+    this.#setDatepicker();
+  }
+
+  _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#submitHandler);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#clickHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('input', this.#clickOfferHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#clickChangeDestinationHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#clickChangeTypeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('input', this.#clickChangePriceHandler);
   }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  }
+
+  #handleStartDataChange = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate,
+    });
+  };
+
+  #handleEndDataChange = ([userDate]) => {
+    this.updateElement({
+      dateTo: userDate,
+    });
+  };
+
+  #clickChangePriceHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      basePrice: evt.target.value,
+    });
+  };
+
+  #setDatepicker() {
+    this.#datepickerFrom = flatpickr(this.element.querySelector('input[name="event-start-time"]'),
+      {
+        dateFormat: 'd/m/y H:i',
+        onChange: this.#handleStartDataChange,
+        defaultDate: this._state.dateFrom,
+      });
+    this.#datepickerTo = flatpickr(this.element.querySelector('input[name="event-end-time"]'),
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateTo,
+        onChange: this.#handleEndDataChange,
+      });
+  }
+
+  #clickOfferHandler = (evt) => {
+    evt.preventDefault();
+    const item = evt.target;
+    const checkedOfferId = Number(item.dataset.offerId);
+    if(item.hasAttribute('checked')){
+      item.removeAttribute('checked');
+      this._state.offers = this._state.offers.filter((id) => id !== checkedOfferId);
+    } else {
+      item.setAttribute('checked', 'checked');
+      this._state.offers.push(checkedOfferId);
+    }
+    this._setState({
+      offers: this._state.offers,
+    });
+  };
+
+  #clickChangeDestinationHandler = (evt) => {
+    evt.preventDefault();
+    const tripDestination = this.#destinations.find((item) => item.name === evt.target.value);
+    this.updateElement({
+      destination: tripDestination,
+    });
+  };
+
+  #clickChangeTypeHandler = (evt) => {
+    evt.preventDefault();
+    const tripType = evt.target.value;
+    this.updateElement({
+      type: tripType,
+      offers: []
+    });
+  };
 
   #submitHandler = (evt) => {
     evt.preventDefault();
-    this.#handlerSubmit();
+    this.#handlerSubmit(AddNewPointView.parseStateToPoint(this._state));
   };
 
   #clickHandler = (evt) => {
@@ -180,8 +272,15 @@ export default class AddNewPointView extends AbstractView {
     this.#handleCloseClick();
   };
 
+  static parsePointToState(point) {
+    return {...point};
+  }
+
+  static parseStateToPoint(state) {
+    return {...state};
+  }
+
   get template() {
-    console.log(this.#offersByType);
-    return createAddNewPointTemplate(this.#point, this.#offersByType);
+    return createAddNewPointTemplate(this._state, this.#offersByType);
   }
 }

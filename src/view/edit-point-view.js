@@ -54,9 +54,9 @@ function createPicturesTemplate(pictures) {
 }
 
 function createDestinationTemplate(destination) {
-  const {description, name, pictures} = destination;
-  return destination !== null ?
-    (
+  if(destination !== undefined) {
+    const {description, name, pictures} = destination;
+    return (
       `<section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">${name}</h3>
         <p class="event__destination-description">${description}</p>
@@ -67,7 +67,9 @@ function createDestinationTemplate(destination) {
           </div>
         </div>
       </section>`
-    ) : '' ;
+    );
+  }
+  return '' ;
 }
 
 function createNewEditPointTemplate(point, offersArr) {
@@ -95,7 +97,7 @@ function createNewEditPointTemplate(point, offersArr) {
             <label class="event__label  event__type-output" for="event-destination-${point.id}">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${point.id}" type="text" name="event-destination" value="${destination.name}" list="destination-list-${point.id}">
+            <input class="event__input  event__input--destination" id="event-destination-${point.id}" type="text" name="event-destination" value="${(destination === undefined ) ? '' : destination.name}" list="destination-list-${point.id}">
             <datalist id="destination-list-${point.id}">
               ${createDestinationListTemplate()}
             </datalist>
