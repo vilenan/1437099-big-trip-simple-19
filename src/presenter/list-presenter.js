@@ -1,4 +1,4 @@
-import {render, remove} from '../framework/render.js';
+import {render, remove, RenderPosition} from '../framework/render.js';
 import PointsListView from '../view/points-list-view.js';
 import SortView from '../view/sort-view.js';
 import EmptyListView from '../view/empty-list-view.js';
@@ -119,7 +119,7 @@ export default class ListPresenter {
       onSortChange: this.#handleSortChange,
       currentSort: this.#currentSortType,
     });
-    render(this.#sortComponent, this.#listComponent.element);
+    render(this.#sortComponent, this.#listComponent.element, RenderPosition.BEFOREBEGIN);
   }
 
   #renderBoard() {
