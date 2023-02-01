@@ -6,6 +6,10 @@ import FilterPresenter from './presenter/filter-presenter.js';
 import ListPresenter from './presenter/list-presenter.js';
 import NewPointButtonView from './view/new-point-button-view.js';
 import {offersByType} from './mock/point.js';
+import PointApiService from './point-api-server.js';
+
+const END_POINT = 'https://19.ecmascript.pages.academy/big-trip-simple';
+const AUTHORIZATION = 'Basic hS2sfS44wcl11984';
 
 const siteHeaderEl = document.querySelector('.page-header');
 const filtersEl = siteHeaderEl.querySelector('.trip-controls__filters');
