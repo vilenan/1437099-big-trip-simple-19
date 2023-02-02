@@ -18,6 +18,7 @@ const pointsContainerEl = siteMainEl.querySelector('.trip-events');
 const headerContentEl = siteHeaderEl.querySelector('.trip-main');
 
 const pointsModel = new PointsModel({
+  pointsApiService: new PointApiService(END_POINT, AUTHORIZATION),
   points : getRandomMockPoints(),
   destinations: destinationsArray,
   offersByType: offersByType,
