@@ -5,29 +5,33 @@ import {formattingFullDate} from '../utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-function createOffersTemplate(point) {
+function createOffersTemplate(point, offersArr) {
   const {type, offers} = point;
-  const objOffersByType = getOffersByType(type);
-  const offersByPointType = objOffersByType.offers;
-  return (offersByPointType.length !== 0) ? (offersByPointType.map((offer) => {
-    const isOfferChecked = (offers.includes(offer.id)) ? 'checked' : '';
-    const offerTitleFusion = offer.title.split(' ').join('');
-    return (
-      `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden"
+
+  const offersByPointType = getOffersByType(type, offersArr).offers;
+
+  if (offersByPointType.length !== 0) {
+    return offersByPointType.map((offer) => {
+      const isOfferChecked = (offers.includes(offer.id)) ? 'checked' : '';
+      const offerTitleFusion = offer.title.split(' ').join('');
+
+      return (
+        `<div class="event__offer-selector">
+            <input class="event__offer-checkbox  visually-hidden"
                id="event-offer-${offerTitleFusion}-${offer.id}"
                type="checkbox"
                name="event-offer-${offerTitleFusion}"
                data-offer-id="${offer.id}"
                ${isOfferChecked}>
-        <label class="event__offer-label" for="event-offer-${offerTitleFusion}-${offer.id}">
-        <span class="event__offer-title">${offer.title}</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${offer.price}</span>
-      </label>
-    </div>`
-    );
-  }).join('')) : '';
+            <label class="event__offer-label" for="event-offer-${offerTitleFusion}-${offer.id}">
+            <span class="event__offer-title">${offer.title}</span>
+                &plus;&euro;&nbsp;
+            <span class="event__offer-price">${offer.price}</span>
+            </label>
+       </div>`);
+    }).join('');
+  }
+  return '';
 }
 
 function createTypesTemplate(point) {
@@ -50,9 +54,9 @@ function createPicturesTemplate(pictures) {
 }
 
 function createDestinationTemplate(destination) {
-  const {description, name, pictures} = destination;
-  return destination !== null ?
-    (
+  if(destination !== undefined) {
+    const {description, name, pictures} = destination;
+    return (
       `<section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">${name}</h3>
         <p class="event__destination-description">${description}</p>
@@ -63,10 +67,12 @@ function createDestinationTemplate(destination) {
           </div>
         </div>
       </section>`
-    ) : '' ;
+    );
+  }
+  return '' ;
 }
 
-function createNewEditPointTemplate(point) {
+function createNewEditPointTemplate(point, offersArr) {
   const {destination, basePrice, dateFrom, dateTo, type} = point;
   return (
     `<li class="trip-events__item">
@@ -91,7 +97,7 @@ function createNewEditPointTemplate(point) {
             <label class="event__label  event__type-output" for="event-destination-${point.id}">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${point.id}" type="text" name="event-destination" value="${destination.name}" list="destination-list-${point.id}">
+            <input class="event__input  event__input--destination" id="event-destination-${point.id}" type="text" name="event-destination" value="${(destination === undefined ) ? '' : destination.name}" list="destination-list-${point.id}">
             <datalist id="destination-list-${point.id}">
               ${createDestinationListTemplate()}
             </datalist>
@@ -124,7 +130,7 @@ function createNewEditPointTemplate(point) {
             <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
             <div class="event__available-offers">
-              ${createOffersTemplate(point)}
+              ${createOffersTemplate(point, offersArr)}
             </div>
           </section>
 
@@ -138,16 +144,18 @@ function createNewEditPointTemplate(point) {
 export default class EditPointView extends AbstractStatefulView {
   #point = null;
   #destinations = null;
+  #offersByType = null;
   #handlerSubmit = null;
   #handlerCloseClick = null;
   #datepickerFrom = null;
   #datepickerTo = null;
   #handleDeleteClick = null;
 
-  constructor({point, destinations, onSubmit, onCloseClick, onDeleteClick}) {
+  constructor({point, destinations, offers, onSubmit, onCloseClick, onDeleteClick}) {
     super();
     this.#point = point;
     this.#destinations = destinations;
+    this.#offersByType = offers;
     this.#handlerSubmit = onSubmit;
     this.#handlerCloseClick = onCloseClick;
     this.#handleDeleteClick = onDeleteClick;
@@ -275,7 +283,7 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   get template() {
-    return createNewEditPointTemplate(this._state);
+    return createNewEditPointTemplate(this._state, this.#offersByType);
   }
 }
 

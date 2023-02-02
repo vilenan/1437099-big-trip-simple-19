@@ -3,11 +3,13 @@ import Observable from '../framework/observable.js';
 export default class PointsModel extends Observable{
   #points = null;
   #destinations = null;
+  #offers = [];
 
-  constructor({points, destinations}) {
+  constructor({points, destinations, offersByType}) {
     super();
     this.#points = points;
     this.#destinations = destinations;
+    this.#offers = offersByType;
   }
 
   get points() {
@@ -20,6 +22,10 @@ export default class PointsModel extends Observable{
 
   get destinations() {
     return this.#destinations;
+  }
+
+  get offers() {
+    return this.#offers;
   }
 
   updatePoint(updateType, update){
