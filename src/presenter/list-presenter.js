@@ -7,6 +7,7 @@ import {SortType, FilterType, UpdateType, UserAction} from '../const.js';
 import {sortPointsDateUp, sortPointsPriceDown} from '../utils.js';
 import {filters} from '../utils/filter.js';
 import NewPointPresenter from './new-point-presenter';
+import LoadingView from '../view/loading-view.js';
 
 
 export default class ListPresenter {
@@ -21,6 +22,8 @@ export default class ListPresenter {
   #filterType = FilterType.EVERYTHING;
   #emptyListComponent = null;
   #newPointPresenter = null;
+  #loadingComponent = new LoadingView();
+  #isLoading = true;
 
   constructor({pointsContainer, pointsModel, filterModel, onNewPointDestroy}) {
     this.#pointsContainer = pointsContainer;
@@ -109,6 +112,8 @@ export default class ListPresenter {
         this.#renderBoard();
         break;
       case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderBoard();
         break;
     }
@@ -123,6 +128,10 @@ export default class ListPresenter {
     this.#renderBoard();
   };
 
+  #renderLoading() {
+    render(this.#loadingComponent, this.#listComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
   #renderSort() {
     this.#sortComponent = new SortView({
       onSortChange: this.#handleSortChange,
@@ -133,6 +142,11 @@ export default class ListPresenter {
 
   #renderBoard() {
     render(this.#listComponent, this.#pointsContainer);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
 
     const points = this.points;
     if (points.length === 0) {
@@ -169,6 +183,7 @@ export default class ListPresenter {
     this.#pointPresenters.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#emptyListComponent) {
       remove(this.#emptyListComponent);
