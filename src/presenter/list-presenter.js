@@ -4,7 +4,7 @@ import SortView from '../view/sort-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import PointPresenter from './point-presenter.js';
 import {SortType, FilterType, UpdateType, UserAction} from '../const.js';
-import {sortPointsDateUp, sortPointsPriceDown} from '../utils.js';
+import {sortPointsDateUp, sortPointsPriceDown} from '../utils/utils.js';
 import {filters} from '../utils/filter.js';
 import NewPointPresenter from './new-point-presenter';
 import LoadingView from '../view/loading-view.js';
@@ -31,9 +31,9 @@ export default class ListPresenter {
     this.#filterModel = filterModel;
 
     this.#newPointPresenter = new NewPointPresenter({
-      listComponent: this.#listComponent.element,
       destinations: this.destinations,
       offers: this.offers,
+      listComponent: this.#listComponent.element,
       onDataChange: this.#handleViewAction,
       onDestroy: onNewPointDestroy,
     });

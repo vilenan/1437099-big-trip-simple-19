@@ -1,18 +1,21 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { getOffersArray } from '../mock/point.js';
-import { formattingShortDate, formattingDayDate } from '../utils.js';
+import { formattingShortDate, formattingDayDate, getOffersByType } from '../utils/utils.js';
 
 function createOffersTemplate(offers) {
-  return offers.map((offer) => `<li class="event__offer">
-          <span class="event__offer-title">${getOffersArray[offer].title}</span>
+  return offers.map(({title, price}) => `<li class="event__offer">
+          <span class="event__offer-title">${title}</span>
           &plus;&euro;&nbsp;
-          <span class="event__offer-price">${getOffersArray[offer].price}</span>
+          <span class="event__offer-price">${price}</span>
         </li>`).join('');
 }
 
-function createPointTemplate(point) {
+function createPointTemplate(point, destinations, offersByType) {
   const {type, destination, offers, basePrice, dateFrom, dateTo} = point;
-  const offersTemplate = createOffersTemplate(offers);
+
+  const offersByPointType = getOffersByType(type, offersByType).offers;
+  const checkedOffersByPointType = offersByPointType.filter((offer) => offers.includes(offer.id));
+
+  const offersTemplate = createOffersTemplate(checkedOffersByPointType);
   return (
     `<li class="trip-events__item">
               <div class="event">
@@ -20,7 +23,7 @@ function createPointTemplate(point) {
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">${type} ${(destination === undefined ) ? '' : destination.name}</h3>
+                <h3 class="event__title">${type} ${(destination === undefined ) ? '' : destinations.find((item) => item.id === destination).name}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
                     <time class="event__start-time" datetime="${dateFrom}">${formattingShortDate(dateFrom)}</time>
@@ -46,16 +49,20 @@ function createPointTemplate(point) {
 export default class PointView extends AbstractView {
   #point = null;
   #handleClick = null;
+  #destinations = null;
+  #offersByType = null;
 
-  constructor({point, onClick}) {
+  constructor({point, destinations, offers, onClick}) {
     super();
     this.#point = point;
+    this.#destinations = destinations;
+    this.#offersByType = offers;
     this.#handleClick = onClick;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
   }
 
   get template() {
-    return createPointTemplate(this.#point);
+    return createPointTemplate(this.#point, this.#destinations, this.#offersByType,);
   }
 
   #clickHandler = () => {

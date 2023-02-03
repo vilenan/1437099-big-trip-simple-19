@@ -48,7 +48,7 @@ export default class NewPointPresenter {
   }
 
   #handleFormSubmit = (point) => {
-    this.#handleDataChange(UserAction.ADD_TASK, UpdateType.MINOR, {id: nanoid(), ...point});
+    this.#handleDataChange(UserAction.ADD_POINT, UpdateType.MINOR, {id: nanoid(), ...point});
     this.destroy();
   };
 

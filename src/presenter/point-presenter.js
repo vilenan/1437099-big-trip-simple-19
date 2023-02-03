@@ -35,6 +35,8 @@ export default class PointPresenter {
 
     this.#pointComponent = new PointView({
       point: this.#point,
+      destinations: this.#destinationsList,
+      offers: this.#offers,
       onClick: this.#handleClick
     });
 
