@@ -25,7 +25,6 @@ const filterModel = new FilterModel();
 const newPointButtonComponent = new NewPointButtonView({
   onClick: handleNewPointButtonClick,
 });
-render(newPointButtonComponent, headerContentEl);
 
 const filterPresenter = new FilterPresenter({
   filterContainer: filtersEl,
@@ -50,6 +49,9 @@ function handleNewPointButtonClick() {
 
 filterPresenter.init();
 listPresenter.init();
-pointsModel.init();
+pointsModel.init()
+  .finally(() => {
+    render(newPointButtonComponent, headerContentEl);
+  });
 
 
