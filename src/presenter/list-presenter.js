@@ -129,7 +129,7 @@ export default class ListPresenter {
   };
 
   #renderLoading() {
-    render(this.#loadingComponent, this.#listComponent.element, RenderPosition.AFTERBEGIN);
+    render(this.#loadingComponent, this.#listComponent.element, RenderPosition.BEFOREBEGIN);
   }
 
   #renderSort() {

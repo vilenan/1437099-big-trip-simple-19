@@ -2,9 +2,9 @@ import AbstractView from '../framework/view/abstract-view.js';
 
 function createLoaderTemplate() {
   return (
-    `<p class="board__loading">
-      Loading...
-    </p>`
+    `<div class="board__loading">
+      <div class="loader"></div>
+    </div>`
   );
 }
 
