@@ -1,6 +1,5 @@
 import AddNewPointView from '../view/add-new-point-view.js';
 import {render, remove, RenderPosition} from '../framework/render';
-import {nanoid} from 'nanoid';
 import {UserAction, UpdateType} from '../const.js';
 
 export default class NewPointPresenter {
@@ -48,7 +47,7 @@ export default class NewPointPresenter {
   }
 
   #handleFormSubmit = (point) => {
-    this.#handleDataChange(UserAction.ADD_POINT, UpdateType.MINOR, {id: nanoid(), ...point});
+    this.#handleDataChange(UserAction.ADD_POINT, UpdateType.MINOR, {...point});
     this.destroy();
   };
 
