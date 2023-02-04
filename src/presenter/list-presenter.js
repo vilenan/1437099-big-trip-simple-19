@@ -198,7 +198,9 @@ export default class ListPresenter {
   }
 
   #handleModeChange = () => {
-    this.#newPointPresenter.destroy();
+    if(this.#newPointPresenter) {
+      this.#newPointPresenter.destroy();
+    }
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 }

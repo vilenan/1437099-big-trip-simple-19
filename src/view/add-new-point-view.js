@@ -7,7 +7,7 @@ import 'flatpickr/dist/flatpickr.min.css';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 
 const BLANK_POINT = {
-  basePrice: 0,
+  basePrice: '',
   dateFrom: dayjs().toDate(),
   dateTo: dayjs().add(1, 'day').toDate(),
   destination: undefined,

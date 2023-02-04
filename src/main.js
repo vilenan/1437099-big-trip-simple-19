@@ -47,11 +47,11 @@ function handleNewPointButtonClick() {
   newPointButtonComponent.element.disabled = true;
 }
 
-filterPresenter.init();
-listPresenter.init();
 pointsModel.init()
   .finally(() => {
     render(newPointButtonComponent, headerContentEl);
   });
+filterPresenter.init();
+listPresenter.init();
 
 
