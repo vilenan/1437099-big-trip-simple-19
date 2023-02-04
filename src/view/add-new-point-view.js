@@ -84,7 +84,7 @@ function createDestinationTemplate(destination) {
 }
 
 function createAddNewPointTemplate(point, destinations, offersByType) {
-  const {destination, basePrice, dateFrom, dateTo, type} = point;
+  const {destination, basePrice, dateFrom, dateTo, type, isDisabled, isSaving, isDeleting} = point;
   const pointDestinationDescription = destinations.find((item) => item.id === destination);
   return (
     `<li class="trip-events__item">
@@ -131,8 +131,8 @@ function createAddNewPointTemplate(point, destinations, offersByType) {
             <input class="event__input  event__input--price" id="event-price-${point.id}" type="text" name="event-price" value="${basePrice}">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Cancel</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Canceling...' : 'Cancel'}</button>
 
         </header>
         <section class="event__details">
@@ -172,6 +172,10 @@ export default class AddNewPointView extends AbstractStatefulView {
     this._restoreHandlers();
   }
 
+  get template() {
+    return createAddNewPointTemplate(this._state, this.#destinations, this.#offersByType);
+  }
+
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#submitHandler);
     this.element.querySelector('.event__reset-btn').addEventListener('click', this.#clickCancelHandler);
@@ -196,6 +200,25 @@ export default class AddNewPointView extends AbstractStatefulView {
     }
   }
 
+  #setDatepicker() {
+    this.#datepickerFrom = flatpickr(this.element.querySelector('input[name="event-start-time"]'),
+      {
+        dateFormat: 'd/m/y H:i',
+        onChange: this.#handleStartDataChange,
+        defaultDate: this._state.dateFrom,
+      });
+    this.#datepickerTo = flatpickr(this.element.querySelector('input[name="event-end-time"]'),
+      {
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateTo,
+        onChange: this.#handleEndDataChange,
+      });
+  }
+
+  reset(point) {
+    this.updateElement(AddNewPointView.parsePointToState(point));
+  }
+
   #handleStartDataChange = ([userDate]) => {
     this.updateElement({
       dateFrom: userDate,
@@ -214,21 +237,6 @@ export default class AddNewPointView extends AbstractStatefulView {
       basePrice: evt.target.value,
     });
   };
-
-  #setDatepicker() {
-    this.#datepickerFrom = flatpickr(this.element.querySelector('input[name="event-start-time"]'),
-      {
-        dateFormat: 'd/m/y H:i',
-        onChange: this.#handleStartDataChange,
-        defaultDate: this._state.dateFrom,
-      });
-    this.#datepickerTo = flatpickr(this.element.querySelector('input[name="event-end-time"]'),
-      {
-        dateFormat: 'd/m/y H:i',
-        defaultDate: this._state.dateTo,
-        onChange: this.#handleEndDataChange,
-      });
-  }
 
   #clickOfferHandler = (evt) => {
     evt.preventDefault();
@@ -274,18 +282,19 @@ export default class AddNewPointView extends AbstractStatefulView {
   };
 
   static parsePointToState(point) {
-    return {...point};
+    return {...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
   }
 
   static parseStateToPoint(state) {
-    return {...state};
-  }
+    const task = {...state};
+    delete task.isDeleting;
+    delete task.isSaving;
+    delete task.isDisabled;
 
-  reset(point) {
-    this.updateElement(AddNewPointView.parsePointToState(point));
-  }
-
-  get template() {
-    return createAddNewPointTemplate(this._state, this.#destinations, this.#offersByType);
+    return task;
   }
 }

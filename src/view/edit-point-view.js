@@ -76,7 +76,7 @@ function createDestinationTemplate(destination) {
 }
 
 function createNewEditPointTemplate(point, destinations, offersByType) {
-  const {destination, basePrice, dateFrom, dateTo, type} = point;
+  const {destination, basePrice, dateFrom, dateTo, type, isDisabled, isSaving, isDeleting} = point;
 
   const pointDestinationDescription = destinations.find((item) => item.id === destination);
   return (
@@ -124,8 +124,8 @@ function createNewEditPointTemplate(point, destinations, offersByType) {
             <input class="event__input  event__input--price" id="event-price-${point.id}" type="text" name="event-price" value="${basePrice}">
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
           <button class="event__rollup-btn" type="button">
             <span class="visually-hidden">Open event</span>
           </button>
@@ -276,11 +276,20 @@ export default class EditPointView extends AbstractStatefulView {
   };
 
   static parsePointToState(point) {
-    return {...point};
+    return {...point,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    };
   }
 
   static parseStateToPoint(state) {
-    return {...state};
+    const task = {...state};
+    delete task.isDeleting;
+    delete task.isSaving;
+    delete task.isDisabled;
+
+    return task;
   }
 
   reset(point) {
