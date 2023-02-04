@@ -24,19 +24,13 @@ export default class ListPresenter {
   #newPointPresenter = null;
   #loadingComponent = new LoadingView();
   #isLoading = true;
+  #onNewPointDestroy = null;
 
   constructor({pointsContainer, pointsModel, filterModel, onNewPointDestroy}) {
     this.#pointsContainer = pointsContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
-
-    this.#newPointPresenter = new NewPointPresenter({
-      destinations: this.destinations,
-      offers: this.offers,
-      listComponent: this.#listComponent.element,
-      onDataChange: this.#handleViewAction,
-      onDestroy: onNewPointDestroy,
-    });
+    this.#onNewPointDestroy = onNewPointDestroy;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -75,6 +69,13 @@ export default class ListPresenter {
   createPoint(){
     this.#currentSortType = SortType.DATE_UP;
     this.#filterModel.setFilterType(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#newPointPresenter = new NewPointPresenter({
+      destinations: this.destinations,
+      offers: this.offers,
+      listComponent: this.#listComponent.element,
+      onDataChange: this.#handleViewAction,
+      onDestroy: this.#onNewPointDestroy,
+    });
     this.#newPointPresenter.init();
   }
 
@@ -177,7 +178,9 @@ export default class ListPresenter {
   }
 
   #clearBoard({resetSortType = false} = {}) {
-    this.#newPointPresenter.destroy();
+    if(this.#newPointPresenter) {
+      this.#newPointPresenter.destroy();
+    }
 
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
