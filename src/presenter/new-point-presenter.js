@@ -60,7 +60,6 @@ export default class NewPointPresenter {
         isDeleting: false,
       });
     };
-    console.log(this.#pointEditComponent);
     this.#pointEditComponent.shake(resetFormState);
   }
 

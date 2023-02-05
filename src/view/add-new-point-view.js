@@ -84,7 +84,7 @@ function createDestinationTemplate(destination) {
 }
 
 function createAddNewPointTemplate(point, destinations, offersByType) {
-  const {destination, basePrice, dateFrom, dateTo, type, isDisabled, isSaving, isDeleting} = point;
+  const {destination, basePrice, dateFrom, dateTo, type, isDisabled, isSaving} = point;
   const pointDestinationDescription = destinations.find((item) => item.id === destination);
   return (
     `<li class="trip-events__item">
