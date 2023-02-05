@@ -1,15 +1,14 @@
 import AddNewPointView from '../view/add-new-point-view.js';
-import {render, remove, RenderPosition} from '../framework/render';
+import {render, remove, RenderPosition} from '../framework/render.js';
 import {UserAction, UpdateType} from '../const.js';
 
 export default class NewPointPresenter {
   #listComponent = null;
+  #pointEditComponent = null;
   #handleDataChange = null;
   #handleDestroy = null;
   #destinationsList = null;
   #offers = null;
-
-  #pointEditComponent = null;
 
   constructor({destinations, offers, listComponent, onDataChange, onDestroy}) {
     this.#listComponent = listComponent;
@@ -46,9 +45,27 @@ export default class NewPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setSaving() {
+    this.#pointEditComponent.updateElement({
+      isSaving: true,
+      isDisabled: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+    console.log(this.#pointEditComponent);
+    this.#pointEditComponent.shake(resetFormState);
+  }
+
   #handleFormSubmit = (point) => {
     this.#handleDataChange(UserAction.ADD_POINT, UpdateType.MINOR, {...point});
-    this.destroy();
   };
 
   #handleCancelClick = () => {

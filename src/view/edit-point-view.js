@@ -179,6 +179,10 @@ export default class EditPointView extends AbstractStatefulView {
     this.#setDatepicker();
   }
 
+  get template() {
+    return createNewEditPointTemplate(this._state, this.#destinations, this.#offersByType);
+  }
+
   removeElement() {
     super.removeElement();
 
@@ -192,18 +196,6 @@ export default class EditPointView extends AbstractStatefulView {
       this.#datepickerTo = null;
     }
   }
-
-  #handleStartDataChange = ([userDate]) => {
-    this.updateElement({
-      dateFrom: userDate,
-    });
-  };
-
-  #handleEndDataChange = ([userDate]) => {
-    this.updateElement({
-      dateTo: userDate,
-    });
-  };
 
   #setDatepicker() {
     this.#datepickerFrom = flatpickr(this.element.querySelector('input[name="event-start-time"]'),
@@ -219,6 +211,22 @@ export default class EditPointView extends AbstractStatefulView {
         onChange: this.#handleEndDataChange,
       });
   }
+
+  reset(point) {
+    this.updateElement(EditPointView.parsePointToState(point));
+  }
+
+  #handleStartDataChange = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate,
+    });
+  };
+
+  #handleEndDataChange = ([userDate]) => {
+    this.updateElement({
+      dateTo: userDate,
+    });
+  };
 
   #submitHandler = (evt) => {
     evt.preventDefault();
@@ -242,7 +250,7 @@ export default class EditPointView extends AbstractStatefulView {
   #clickChangePriceHandler = (evt) => {
     evt.preventDefault();
     this._setState({
-      basePrice: evt.target.value,
+      basePrice: Number(evt.target.value),
     });
   };
 
@@ -290,14 +298,6 @@ export default class EditPointView extends AbstractStatefulView {
     delete task.isDisabled;
 
     return task;
-  }
-
-  reset(point) {
-    this.updateElement(EditPointView.parsePointToState(point));
-  }
-
-  get template() {
-    return createNewEditPointTemplate(this._state, this.#destinations, this.#offersByType);
   }
 }
 

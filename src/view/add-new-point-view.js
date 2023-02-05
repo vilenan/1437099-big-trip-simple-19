@@ -132,7 +132,7 @@ function createAddNewPointTemplate(point, destinations, offersByType) {
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
-          <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Canceling...' : 'Cancel'}</button>
+          <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>Cancel</button>
 
         </header>
         <section class="event__details">
@@ -234,7 +234,7 @@ export default class AddNewPointView extends AbstractStatefulView {
   #clickChangePriceHandler = (evt) => {
     evt.preventDefault();
     this._setState({
-      basePrice: evt.target.value,
+      basePrice: Number(evt.target.value),
     });
   };
 
