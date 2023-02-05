@@ -1,5 +1,6 @@
 import {formattingFullDate} from '../utils/utils.js';
 import dayjs from 'dayjs';
+import he from 'he';
 import {getOffersByType} from '../utils/utils.js';
 import {POINT_TYPE} from '../const.js';
 import flatpickr from 'flatpickr';
@@ -71,7 +72,7 @@ function createDestinationTemplate(destination) {
     return (
       `<section class="event__section  event__section--destination ${description === undefined ? 'visually-hidden' : ''}">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${description}</p>
+        <p class="event__destination-description">${he.encode(description)}</p>
 
         <div class="event__photos-container ${pictures === undefined ? 'visually-hidden' : ''}">
           <div class="event__photos-tape">
@@ -107,9 +108,9 @@ function createAddNewPointTemplate(point, destinations, offersByType) {
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-${point.id}">
-              ${type}
+              ${he.encode(type)}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-${point.id}" type="text" name="event-destination" value="${(destination === undefined ) ? '' : pointDestinationDescription.name}" list="destination-list-${point.id}">
+            <input class="event__input  event__input--destination" id="event-destination-${point.id}" type="text" name="event-destination" value="${(destination === undefined ) ? '' : he.encode(pointDestinationDescription.name)}" list="destination-list-${point.id}">
             <datalist id="destination-list-${point.id}">
               ${createDestinationListTemplate(destinations)}
             </datalist>
@@ -128,7 +129,7 @@ function createAddNewPointTemplate(point, destinations, offersByType) {
               <span class="visually-hidden">Price</span>
              &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-${point.id}" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-${point.id}" type="text" name="event-price" value="${he.encode((basePrice).toString())}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
