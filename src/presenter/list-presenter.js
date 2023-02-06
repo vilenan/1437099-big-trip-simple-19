@@ -9,6 +9,7 @@ import {filters} from '../utils/filter.js';
 import NewPointPresenter from './new-point-presenter.js';
 import LoadingView from '../view/loading-view.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import ErrorServerView from '../view/error-server-view.js';
 
 const TimeLimit = {
   LOWER_LIMIT: 350,
@@ -27,6 +28,7 @@ export default class ListPresenter {
   #filterType = FilterType.EVERYTHING;
   #emptyListComponent = null;
   #newPointPresenter = null;
+  #errorServerComponent = null;
   #loadingComponent = new LoadingView();
   #isLoading = true;
   #onNewPointDestroy = null;
@@ -88,6 +90,11 @@ export default class ListPresenter {
     this.#newPointPresenter.init();
   }
 
+  #renderErrorServer() {
+    this.#errorServerComponent = new ErrorServerView();
+    render(this.#errorServerComponent, this.#listComponent.element);
+  }
+
   #renderNoTask() {
     this.#emptyListComponent = new EmptyListView({
       filterType: this.#filterModel.filterType
@@ -116,6 +123,11 @@ export default class ListPresenter {
     }
 
     const points = this.points;
+    if (points.length === 0 && this.offers.length === 0) {
+      this.#renderErrorServer();
+      return;
+    }
+
     if (points.length === 0) {
       this.#renderNoTask();
       return;
