@@ -2,7 +2,7 @@ import {formattingFullDate} from '../utils/utils.js';
 import dayjs from 'dayjs';
 import he from 'he';
 import {getOffersByType} from '../utils/utils.js';
-import {POINT_TYPE} from '../const.js';
+import {POINT_TYPES} from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
@@ -13,7 +13,7 @@ const BLANK_POINT = {
   dateTo: dayjs().add(1, 'day').toDate(),
   destination: undefined,
   offers: [],
-  type: POINT_TYPE[0],
+  type: POINT_TYPES[0],
 };
 
 
@@ -55,7 +55,7 @@ function getPicturesListTemplate(pictures) {
 }
 
 function createTypesTemplate(point) {
-  return POINT_TYPE.map((type) => {
+  return POINT_TYPES.map((type) => {
     const checked = (type === point.type) ? 'checked' : '';
     return `<div class="event__type-item">
       <input id="event-type-${type}-${point.id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${checked}>

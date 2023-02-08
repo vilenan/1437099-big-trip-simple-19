@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {getOffersByType} from '../utils/utils.js';
-import {POINT_TYPE} from '../const.js';
+import {POINT_TYPES} from '../const.js';
 import {formattingFullDate} from '../utils/utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -36,7 +36,7 @@ function createOffersTemplate(point, offersByType) {
 }
 
 function createTypesTemplate(point) {
-  return POINT_TYPE.map((type) => {
+  return POINT_TYPES.map((type) => {
     const checked = (type === point.type) ? 'checked' : '';
     return `<div class="event__type-item">
       <input id="event-type-${type}-${point.id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${checked}>
