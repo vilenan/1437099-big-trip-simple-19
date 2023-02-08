@@ -179,11 +179,11 @@ export default class AddNewPointView extends AbstractStatefulView {
 
   _restoreHandlers() {
     this.element.querySelector('form').addEventListener('submit', this.#submitHandler);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#clickCancelHandler);
-    this.element.querySelector('.event__available-offers').addEventListener('input', this.#clickOfferHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#clickChangeDestinationHandler);
-    this.element.querySelector('.event__type-group').addEventListener('change', this.#clickChangeTypeHandler);
-    this.element.querySelector('.event__input--price').addEventListener('input', this.#clickChangePriceHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#cancelClickHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
     this.#setDatepicker();
   }
 
@@ -232,14 +232,14 @@ export default class AddNewPointView extends AbstractStatefulView {
     });
   };
 
-  #clickChangePriceHandler = (evt) => {
+  #priceChangeHandler = (evt) => {
     evt.preventDefault();
     this._setState({
       basePrice: Number(evt.target.value),
     });
   };
 
-  #clickOfferHandler = (evt) => {
+  #offerChangeHandler = (evt) => {
     evt.preventDefault();
     const item = evt.target;
     const checkedOfferId = Number(item.dataset.offerId);
@@ -255,7 +255,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     });
   };
 
-  #clickChangeDestinationHandler = (evt) => {
+  #destinationChangeHandler = (evt) => {
     evt.preventDefault();
     const tripDestination = this.#destinations.find((item) => item.name === evt.target.value);
     this.updateElement({
@@ -263,7 +263,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     });
   };
 
-  #clickChangeTypeHandler = (evt) => {
+  #typeChangeHandler = (evt) => {
     evt.preventDefault();
     const tripType = evt.target.value;
     this.updateElement({
@@ -277,7 +277,7 @@ export default class AddNewPointView extends AbstractStatefulView {
     this.#handlerSubmit(AddNewPointView.parseStateToPoint(this._state));
   };
 
-  #clickCancelHandler = (evt) => {
+  #cancelClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleCloseClick();
   };
