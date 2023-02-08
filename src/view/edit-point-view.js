@@ -250,6 +250,9 @@ export default class EditPointView extends AbstractStatefulView {
 
   #priceChangeHandler = (evt) => {
     evt.preventDefault();
+    if (evt.target.value === undefined) {
+      this.reset(this._state);
+    }
     this._setState({
       basePrice: Number(evt.target.value),
     });
@@ -258,6 +261,9 @@ export default class EditPointView extends AbstractStatefulView {
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
     const tripDestination = this.#destinations.find((item) => item.name === evt.target.value);
+    if (tripDestination === undefined) {
+      this.reset(this._state);
+    }
     this.updateElement({
       destination: tripDestination.id,
     });
