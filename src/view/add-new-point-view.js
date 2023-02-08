@@ -205,13 +205,15 @@ export default class AddNewPointView extends AbstractStatefulView {
     this.#datepickerFrom = flatpickr(this.element.querySelector('input[name="event-start-time"]'),
       {
         dateFormat: 'd/m/y H:i',
-        onChange: this.#handleStartDataChange,
         defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
+        onChange: this.#handleStartDataChange,
       });
     this.#datepickerTo = flatpickr(this.element.querySelector('input[name="event-end-time"]'),
       {
         dateFormat: 'd/m/y H:i',
         defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
         onChange: this.#handleEndDataChange,
       });
   }

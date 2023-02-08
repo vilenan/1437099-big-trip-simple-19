@@ -204,12 +204,14 @@ export default class EditPointView extends AbstractStatefulView {
         dateFormat: 'd/m/y H:i',
         onChange: this.#handleStartDataChange,
         defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
       });
     this.#datepickerTo = flatpickr(this.element.querySelector('input[name="event-end-time"]'),
       {
         dateFormat: 'd/m/y H:i',
-        defaultDate: this._state.dateTo,
         onChange: this.#handleEndDataChange,
+        defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
       });
   }
 
