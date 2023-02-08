@@ -49,6 +49,7 @@ function handleNewPointButtonClick() {
 pointsModel.init()
   .finally(() => {
     render(newPointButtonComponent, headerContentEl);
+    newPointButtonComponent.element.disabled = !pointsModel.points.length;
   });
 filterPresenter.init();
 listPresenter.init();
